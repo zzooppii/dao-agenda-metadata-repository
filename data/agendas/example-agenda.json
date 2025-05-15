@@ -1,0 +1,36 @@
+{
+  "id": 1,
+  "title": "Increase Treasury Allocation",
+  "description": "Proposal to increase the DAO treasury allocation for Q3 2024.",
+  "network": "mainnet",
+  "transaction": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "creator": {
+    "address": "0x1111111111111111111111111111111111111111",
+    "signature": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef"
+  },
+  "snapshotUrl": "https://snapshot.org/#/mydao.eth/proposal/1",
+  "discourseUrl": "https://forum.mydao.com/t/proposal-1",
+  "actions": [
+    {
+      "title": "updateSeigniorage()",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorage()",
+      "calldata": "0x764a7856",
+      "abi": [
+        {
+          "inputs": [],
+          "name": "updateSeigniorage",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    }
+  ]
+}

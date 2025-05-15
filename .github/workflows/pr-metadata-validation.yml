@@ -1,0 +1,40 @@
+name: Validate Agenda Metadata
+
+on:
+  pull_request:
+    paths:
+      - 'data/agendas/mainnet/*.json'
+      - 'data/agendas/sepolia/*.json'
+      - 'src/types/agenda-metadata.ts'
+      - 'src/validators/validate-metadata.ts'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get changed agenda files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            data/agendas/mainnet/*.json
+            data/agendas/sepolia/*.json
+
+      - name: Validate changed agenda metadata files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
+          SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          npx ts-node src/validators/validate-metadata.ts ${{ steps.changed-files.outputs.all_changed_files }}
