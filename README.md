@@ -74,20 +74,30 @@ data/
   - `<title>` must match the title in the metadata file
 - PR Description Format:
   ```
-  ## Title
-  <agenda title from metadata>
+  ## Agenda Metadata Submission
 
-  ## Description (Optional)
-  <your own description or explanation>
+  - Network: mainnet/sepolia
+  - Agenda ID: 1
+  - Title: Increase Treasury Allocation
+  - Transaction Hash: 0x...
+  - Creator Address: 0x...
+  - Signature: 0x...
 
-  ## Transaction
-  <transaction hash>
+  ## Description
+  Please include a summary of the changes and the related issue.
 
-  ## Snapshot (Optional)
-  <snapshot URL if available>
+  ## Type of change
+  - [ ] New agenda
+  - [ ] Update existing agenda
+  - [ ] Other (please describe)
 
-  ## Discourse (Optional)
-  <discourse URL if available>
+  ## Checklist
+  - [ ] My PR title follows the format: `[Agenda] <network> - <agenda_id> - <agenda_title>`
+  - [ ] I have added only one agenda file
+  - [ ] I have verified the agenda metadata
+  - [ ] I have checked the agenda ID matches the PR title
+  - [ ] I have verified the network (mainnet/sepolia) matches the PR title
+
   ```
 - Validation checks:
   - Schema (required fields, types, format)
