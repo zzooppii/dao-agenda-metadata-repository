@@ -1,16 +1,16 @@
-# PR 제목 규칙
+# PR Title Rules
 
-- 반드시 아래 형식으로 작성해 주세요:
+- Please follow the format below:
 
-  `[Agenda] <네트워크> - <아젠다 id> - <아젠다 제목>`
+  `[Agenda] <network> - <agenda_id> - <agenda_title>`
 
-  예시: `[Agenda] mainnet - 1 - Increase Treasury Allocation`
+  Example: `[Agenda] mainnet - 1 - Increase Treasury Allocation`
 
 ---
 
-## 메타데이터 파일명 규칙
-- 메타데이터 파일명은 반드시 `agenda-<id>.json` 형식이어야 하며, id는 메타데이터의 id 필드와 동일해야 합니다.
-- 예시:
+## Metadata Filename Rules
+- The metadata filename must follow the format `agenda-<id>.json`, where id must match the id field in the metadata.
+- Examples:
   - data/agendas/mainnet/agenda-1.json
   - data/agendas/sepolia/agenda-2.json
 
@@ -25,5 +25,17 @@
 - Creator Address: 0x...
 - Signature: 0x...
 
-### Description
-(아젠다에 대한 설명을 자유롭게 작성)
+## Description
+Please include a summary of the changes and the related issue.
+
+## Type of change
+- [ ] New agenda
+- [ ] Update existing agenda
+- [ ] Other (please describe)
+
+## Checklist
+- [ ] My PR title follows the format: `[Agenda] <network> - <agenda_id> - <agenda_title>`
+- [ ] I have added only one agenda file
+- [ ] I have verified the agenda metadata
+- [ ] I have checked the agenda ID matches the PR title
+- [ ] I have verified the network (mainnet/sepolia) matches the PR title
