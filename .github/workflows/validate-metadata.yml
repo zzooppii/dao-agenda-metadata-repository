@@ -1,0 +1,42 @@
+name: Validate Agenda Metadata
+
+on:
+  pull_request:
+    paths:
+      - 'data/agendas/**/*.json'
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            data/agendas/**/*.json
+
+      - name: Validate metadata
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ -f "$file" ]]; then
+              echo "Validating $file..."
+              npm run validate -- --pr-title "${{ github.event.pull_request.title }}" "$file"
+            fi
+          done
+        env:
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
+          SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}

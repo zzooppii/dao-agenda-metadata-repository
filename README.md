@@ -67,6 +67,28 @@ data/
 
 ## PR and Automatic Validation
 - When a PR is created, only the changed metadata file is automatically validated.
+- PR Title Format: `[Agenda] <network> - <id> - <title>`
+  - Example: `[Agenda] sepolia - 64 - Test Agenda`
+  - `<network>` must be either "mainnet" or "sepolia"
+  - `<id>` must match the agenda ID in the metadata file
+  - `<title>` must match the title in the metadata file
+- PR Description Format:
+  ```
+  ## Title
+  <agenda title from metadata>
+
+  ## Description (Optional)
+  <your own description or explanation>
+
+  ## Transaction
+  <transaction hash>
+
+  ## Snapshot (Optional)
+  <snapshot URL if available>
+
+  ## Discourse (Optional)
+  <discourse URL if available>
+  ```
 - Validation checks:
   - Schema (required fields, types, format)
   - Transaction `from` address matches `creator.address`
@@ -118,7 +140,7 @@ To prove ownership of the agenda registration, sign a message using the same wal
   ```
 3. **Validate a specific metadata file**
   ```sh
-  npx ts-node src/validators/validate-metadata.ts --pr-title "[Agenda] mainnet - 1 - Increase Treasury Allocation" data/agendas/mainnet/agenda-1.json
+  npm run validate -- --pr-title "[Agenda] sepolia - 64 - Test Agenda" data/agendas/sepolia/agenda-64.json
   ```
   - Or set the PR_TITLE environment variable.
   - The validation result will be printed in the terminal.
@@ -127,14 +149,14 @@ To prove ownership of the agenda registration, sign a message using the same wal
   **Validation Output Example:**
   - Success:
     ```
-    ✅ data/agendas/mainnet/agenda-1.json is valid.
+    ✅ data/agendas/sepolia/agenda-64.json is valid.
     ```
   - Failure:
     ```
     ❌ PR title id (2) does not match metadata id (1)
     ❌ File path network (mainnet) does not match metadata network (sepolia)
-    ❌ data/agendas/mainnet/agenda-1.json creator.signature is invalid or does not match creator.address
-    ❌ data/agendas/mainnet/agenda-1.json validation failed:
+    ❌ data/agendas/sepolia/agenda-64.json creator.signature is invalid or does not match creator.address
+    ❌ data/agendas/sepolia/agenda-64.json validation failed:
     {
       "issues": [
         {

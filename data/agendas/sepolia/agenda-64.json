@@ -1,0 +1,67 @@
+{
+    "id": 64,
+    "title": "Test Agenda",
+    "description": "desc",
+    "network": "sepolia",
+    "transaction": "0xf011feaead3f5b09beaa45d1de573f38aebdcbe0a0920ed8c8a42a2e806b2d5c",
+    "creator": {
+      "address": "0xc1eba383D94c6021160042491A5dfaF1d82694E6",
+      "signature": "0xbed3d0da012a44827cdc530ec68198ff4d4034e68afc44d89b9517e85cf34d7e6adf261df4a07a512fee9c659ce5d5f72465a3f777bca97759fc8fec1c830a5c1b"
+    },
+    "actions": [
+      {
+        "title": "updateSeigniorageLayer(address)",
+        "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+        "method": "updateSeigniorageLayer(address)",
+        "calldata": "0x1e1f0b60000000000000000000000000f078ae62ea4740e19ddf6c0c5e17ecdb820bbee1",
+        "abi": [
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "layer2",
+                "type": "address"
+              }
+            ],
+            "name": "updateSeigniorageLayer",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          }
+        ],
+        "sendEth": false,
+        "id": "1747210004619",
+        "type": "Custom"
+      },
+      {
+        "title": "updateSeigniorage()",
+        "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+        "method": "updateSeigniorage()",
+        "calldata": "0x764a7856",
+        "abi": [
+          {
+            "inputs": [],
+            "name": "updateSeigniorage",
+            "outputs": [
+              {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+              }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          }
+        ],
+        "sendEth": false,
+        "id": "1747210034678",
+        "type": "Custom"
+      }
+    ]
+}
