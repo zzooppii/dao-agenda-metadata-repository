@@ -41,7 +41,7 @@ const ActionSchema = z.object({
 export const AgendaMetadataSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(1).max(200),
-  description: z.string().min(1).max(1000),
+  description: z.string().min(1).max(50000),
   network: z.enum(["mainnet", "sepolia"]),
   transaction: hexStringSchema,
   creator: z.object({
