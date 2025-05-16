@@ -7,11 +7,9 @@ import { readFileSync } from "fs";
 import { parseArgs } from "node:util";
 import { ethers } from "ethers";
 
-// 환경 변수 로드 및 검증
-const envResult = dotenv.config();
-if (envResult.error) {
-  console.error("❌ Error loading .env file:", envResult.error.message);
-  process.exit(1);
+// 환경 변수 로드 (로컬 개발 환경용)
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
 }
 
 // 상수 정의
