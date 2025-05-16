@@ -1,2 +1,5 @@
 node_modules
 .env
+backup
+data/agenda/mainnet
+data/agenda/sepolia
