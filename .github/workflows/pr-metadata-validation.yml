@@ -29,7 +29,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm ci
+      - name: Install dependencies
+        run: npm install
       - name: Get changed agenda files
         id: changed-files
         uses: tj-actions/changed-files@v44
