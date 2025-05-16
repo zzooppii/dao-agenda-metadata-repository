@@ -55,7 +55,7 @@ jobs:
           fi
       - name: Validate changed agenda metadata files
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: npm run validate
+        run: npm run validate -- --pr-title "${{ github.event.pull_request.title }}" ${{ steps.changed-files.outputs.all_changed_files }}
         env:
           NODE_ENV: production
           MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
