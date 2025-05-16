@@ -5,8 +5,54 @@ import { ethers, verifyMessage, TransactionResponse, TransactionReceipt, Log } f
 const AGENDA_CREATED_EVENT = "event AgendaCreated(address indexed from,uint256 indexed id,address[] targets,uint128 noticePeriodSeconds,uint128 votingPeriodSeconds,bool atomicExecute)";
 const SIGNATURE_MESSAGE_TEMPLATE = "I am the one who submitted agenda #%d via transaction %s. This signature proves that I am the one who submitted this agenda.";
 
+const abiAgendaCreate = [
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "targets",
+        "type": "address[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "noticePeriodSeconds",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "votingPeriodSeconds",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "atomicExecute",
+        "type": "bool"
+      }
+    ],
+    "name": "AgendaCreated",
+    "type": "event"
+  }
+]
+
 // 이벤트 인터페이스 생성
-export const iface = new ethers.Interface([AGENDA_CREATED_EVENT]);
+export const iface = new ethers.Interface(abiAgendaCreate);
 
 // 이벤트 타입 정의
 interface AgendaCreatedEvent {
@@ -97,6 +143,7 @@ export const AgendaValidator = {
     }
 
     const eventTopic = event.topicHash;
+
     const log = receipt.logs.find(l => l.topics[0] === eventTopic);
     if (!log) {
       throw new Error(ERROR_MESSAGES.EVENT_NOT_FOUND(receipt.hash));
@@ -104,6 +151,7 @@ export const AgendaValidator = {
 
     try {
       const parsed = iface.parseLog(log);
+
       if (!parsed) {
         throw new Error("Failed to parse event log");
       }
@@ -131,7 +179,12 @@ export const AgendaValidator = {
       }
 
       const eventId = eventData.id.toString();
+      // console.log('eventId', eventId)
+      // console.log('expectedId.toString()', expectedId.toString())
+
       const isValid = eventId === expectedId.toString();
+      // console.log('isValid', isValid)
+
 
       if (!isValid) {
         console.error(ERROR_MESSAGES.ID_MISMATCH(
@@ -139,7 +192,6 @@ export const AgendaValidator = {
           expectedId.toString()
         ));
       }
-
       return isValid;
     } catch (error) {
       throw new Error(ERROR_MESSAGES.EVENT_PARSE_FAILED(
