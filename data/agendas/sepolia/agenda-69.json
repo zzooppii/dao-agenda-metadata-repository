@@ -1,0 +1,38 @@
+{
+  "id": 69,
+  "network": "sepolia",
+  "transaction": "0xed94abf02fde17cecc61ab3c2830eafe38508a3430b720f1ce584f5052c473e4",
+  "creator": {
+    "address": "0xc1eba383D94c6021160042491A5dfaF1d82694E6",
+    "signature": "0xff4fd8785957cdbaac2760b1c8c54f5fec1535df0195f4bbc9b1350e7c72425062d3bfdd7bb67c5407287f9a343282ce54a1ad6f112c62da13ae8817d28d95b51b"
+  },
+  "title": "This Agenda is Test",
+  "description": "# Limit withdrawal delay period by operator\n\n## Simple Summary\nFix overflow vulnerability and limit Operator's ability to set custom withdrawal delay period to at most 30 days.\n\n## Motivation\nCommunity member, Black Cow, identified overflow attack for withdraw delay that allows the operator to basically reduce the withdraw delay time to 0, effectively removing the withdraw delay time. Tokamak Network contract team verified the result, and also identified that the function can be abused to lock staked TON for very long time (~10^32 years), permanently locking staked TON.\n\n## On-Chain Effects\nThis proposal will limit operator account's ability of setting withdraw delay for their layer2 to maximum of 216000 blocks (~ 30 days).\n\n```\nrequire(withdrawalDelay_ > globalWithdrawalDelay && withdrawalDelay_ <= MAX_DELAY_BLOCKS, \\\"Not acceptable\\\");\nwithdrawalDelay[l2chain] variable assignment check\n```\n\n## References\n- Implementation: [setWithdrawalDelay](https://github.com/tokamak-network/ton-staking-v2/blob/f9e330c904819605202064a143789fa97b27c1c6/contracts/stake/managers/DepositManager_setWithdrawalDelay.sol#L38-L44)\n- Tests: [Sepolia](https://github.com/tokamak-network/ton-staking-v2/issues/33#issuecomment-2259514627)\n- Discussion: [Github issue](https://github.com/tokamak-network/ton-staking-v2/issues/33)\n- Bounty: 3,300 TON has been paid as bounty\n\n## Copyright\nCopyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).",
+  "actions": [
+    {
+      "title": "updateSeigniorage()",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorage()",
+      "calldata": "0x764a7856",
+      "abi": [
+        {
+          "inputs": [],
+          "name": "updateSeigniorage",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false,
+      "id": "1747893481540",
+      "type": "Custom"
+    }
+  ],
+  "timestamp": "2025-05-23T11:23:18.390Z"
+}
