@@ -1,0 +1,44 @@
+{
+  "id": 72,
+  "network": "sepolia",
+  "transaction": "0xace4be0efb32dc27721682f1330c91e141735cbd62643122140c67bda685e3a5",
+  "creator": {
+    "address": "0xf0B595d10a92A5a9BC3fFeA7e79f5d266b6035Ea",
+    "signature": "0x1256f8cba1c9bfe97541f4644af2063fa266d5d6abfd8b83b0837bba76401fd4351bc3b4c532b32cd23b4431cbb6928513cbd30029f4ffeff6e724b3021d0e1d1c"
+  },
+  "title": "Test2",
+  "description": "Description 2",
+  "actions": [
+    {
+      "title": "updateSeigniorageLayer(address)",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorageLayer(address)",
+      "calldata": "0x1e1f0b60000000000000000000000000f078ae62ea4740e19ddf6c0c5e17ecdb820bbee1",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            }
+          ],
+          "name": "updateSeigniorageLayer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false,
+      "id": "1748317345839",
+      "type": "Custom"
+    }
+  ],
+  "timestamp": "2025-05-27T03:43:20.534Z"
+}
