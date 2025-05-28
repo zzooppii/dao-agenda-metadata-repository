@@ -57,23 +57,15 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
           echo "Checking environment variables..."
-          if [ -n "$SEPOLIA_RPC_URL" ]; then
-            echo "SEPOLIA_RPC_URL is set"
-          else
-            echo "SEPOLIA_RPC_URL is not set"
-          fi
-          if [ -n "$MAINNET_RPC_URL" ]; then
-            echo "MAINNET_RPC_URL is set"
-          else
-            echo "MAINNET_RPC_URL is not set"
-          fi
+          echo "SEPOLIA_RPC_URL from vars: ${{ vars.SEPOLIA_RPC_URL }}"
+          echo "MAINNET_RPC_URL from vars: ${{ vars.MAINNET_RPC_URL }}"
       - name: Validate changed agenda metadata files
         if: steps.changed-files.outputs.any_changed == 'true'
         run: npm run validate -- --pr-title "${{ github.event.pull_request.title }}" ${{ steps.changed-files.outputs.all_changed_files }}
         env:
           NODE_ENV: production
-          MAINNET_RPC_URL: ${{ vars.MAINNET_RPC_URL }}
-          SEPOLIA_RPC_URL: ${{ vars.SEPOLIA_RPC_URL }}
+          MAINNET_RPC_URL: https://ethereum-rpc.publicnode.com
+          SEPOLIA_RPC_URL: https://ethereum-sepolia-rpc.publicnode.com
           NETWORK: ${{ contains(steps.changed-files.outputs.all_changed_files, 'mainnet') && 'mainnet' || 'sepolia' }}
           AGENDA_ID: ${{ github.event.inputs.agenda_id || '' }}
           PR_TITLE: ${{ github.event.pull_request.title }}
