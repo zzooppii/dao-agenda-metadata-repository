@@ -1,0 +1,45 @@
+{
+  "id": 74,
+  "title": "UpdateSeigniorage Poseidon",
+  "description": "UpdateSeigniorage Poseidon",
+  "createdAt": 1748320332,
+  "creator": {
+    "address": "0xc1eba383D94c6021160042491A5dfaF1d82694E6",
+    "signature": "0x7a083ea78f4d4969ab7b4b918e9d2104ac8299ed959d602a48f23bdf826e082e6368a9b365c6c9bc4295b0d23883c5bb8b6076258d50d3fe5ed56b087b0e4ec51b"
+  },
+  "targets": [],
+  "network": "sepolia",
+  "transaction": "0x9473663d21f4470efa6b9e2cb98e16f55a95edfb3852065f317599fcc9b15c10",
+  "actions": [
+    {
+      "title": "updateSeigniorageLayer(address)",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorageLayer(address)",
+      "calldata": "0x1e1f0b60000000000000000000000000f078ae62ea4740e19ddf6c0c5e17ecdb820bbee1",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            }
+          ],
+          "name": "updateSeigniorageLayer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false,
+      "id": "1748320299393",
+      "type": "Custom"
+    }
+  ]
+}
