@@ -53,6 +53,20 @@ jobs:
             echo "Error: PR title must be in format '[Agenda] <network> - <agenda_id> - <agenda_title>'"
             exit 1
           fi
+      - name: Debug environment variables
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "Checking environment variables..."
+          if [ -n "$SEPOLIA_RPC_URL" ]; then
+            echo "SEPOLIA_RPC_URL is set"
+          else
+            echo "SEPOLIA_RPC_URL is not set"
+          fi
+          if [ -n "$MAINNET_RPC_URL" ]; then
+            echo "MAINNET_RPC_URL is set"
+          else
+            echo "MAINNET_RPC_URL is not set"
+          fi
       - name: Validate changed agenda metadata files
         if: steps.changed-files.outputs.any_changed == 'true'
         run: npm run validate -- --pr-title "${{ github.event.pull_request.title }}" ${{ steps.changed-files.outputs.all_changed_files }}
