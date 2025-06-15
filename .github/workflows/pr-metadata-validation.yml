@@ -49,23 +49,24 @@ jobs:
       - name: Validate PR title
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          if ! echo "${{ github.event.pull_request.title }}" | grep -qE '^\[Agenda\] (mainnet|sepolia) - [0-9]+ - .+'; then
-            echo "Error: PR title must be in format '[Agenda] <network> - <agenda_id> - <agenda_title>'"
+          if ! echo "${{ github.event.pull_request.title }}" | grep -qE '^\[Agenda( Update)?\] (mainnet|sepolia) - [0-9]+ - .+'; then
+            echo "Error: PR title must be in format '[Agenda] <network> - <agenda_id> - <agenda_title>' or '[Agenda Update] <network> - <agenda_id> - <agenda_title>'"
             exit 1
           fi
-      - name: Debug environment variables
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          echo "Checking environment variables..."
-          echo "SEPOLIA_RPC_URL from vars: ${{ vars.SEPOLIA_RPC_URL }}"
-          echo "MAINNET_RPC_URL from vars: ${{ vars.MAINNET_RPC_URL }}"
+
       - name: Validate changed agenda metadata files
         if: steps.changed-files.outputs.any_changed == 'true'
         run: npm run validate -- --pr-title "${{ github.event.pull_request.title }}" ${{ steps.changed-files.outputs.all_changed_files }}
         env:
           NODE_ENV: production
-          MAINNET_RPC_URL: https://ethereum-rpc.publicnode.com
-          SEPOLIA_RPC_URL: https://ethereum-sepolia-rpc.publicnode.com
-          NETWORK: ${{ contains(steps.changed-files.outputs.all_changed_files, 'mainnet') && 'mainnet' || 'sepolia' }}
-          AGENDA_ID: ${{ github.event.inputs.agenda_id || '' }}
           PR_TITLE: ${{ github.event.pull_request.title }}
+
+      - name: Auto-merge PR
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: pascalgn/merge-action@v0.15.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          merge_method: squash
+          merge_commit_message: ${{ github.event.pull_request.title }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
