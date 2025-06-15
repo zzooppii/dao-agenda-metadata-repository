@@ -9,7 +9,15 @@
   },
   "scripts": {
     "test": "jest",
-    "validate": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/validators/validate-metadata.ts"
+    "validate": "tsx src/validators/validate-metadata.ts",
+    "validate:schema": "tsx src/validators/validate-metadata.ts --check schema",
+    "validate:format": "tsx src/validators/validate-metadata.ts --check format",
+    "validate:pr-title": "tsx src/validators/validate-metadata.ts --check pr-title",
+    "validate:time": "tsx src/validators/validate-metadata.ts --check time",
+    "validate:signature": "tsx src/validators/validate-metadata.ts --check signature",
+    "validate:transaction": "tsx src/validators/validate-metadata.ts --check transaction",
+    "validate:local": "tsx src/validators/validate-metadata.ts --check schema,format,pr-title,time,signature",
+    "validate:quick": "tsx src/validators/validate-metadata.ts --check schema,format"
   },
   "keywords": [],
   "author": "",
@@ -24,10 +32,12 @@
     "@types/node": "^20.11.24",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
+    "@vitest/coverage-v8": "^3.2.3",
     "eslint": "^9.26.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.3.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.3"
   }
 }

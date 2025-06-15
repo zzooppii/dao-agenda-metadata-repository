@@ -8,6 +8,7 @@
     "address": "0x1111111111111111111111111111111111111111",
     "signature": "0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef"
   },
+  "createdAt": "2024-03-15T10:30:00.00Z",
   "snapshotUrl": "https://snapshot.org/#/mydao.eth/proposal/1",
   "discourseUrl": "https://forum.mydao.com/t/proposal-1",
   "actions": [
