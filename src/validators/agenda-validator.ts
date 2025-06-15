@@ -1,60 +1,36 @@
-import { AgendaMetadataSchema } from "../types/agenda-metadata.js";
-import { ethers, verifyMessage, TransactionResponse, TransactionReceipt, Log } from "ethers";
+import { ethers } from "ethers";
+import { AgendaMetadata, AgendaMetadataSchema } from "../types/agenda-metadata.js";
+import { ContractInterfaces, EventTopics } from "../config/abi-loader.js";
+import {
+  TIME_CONSTANTS,
+  VALIDATION_CONSTANTS,
+  ERROR_MESSAGES,
+  SIGNATURE_MESSAGES
+} from "../config/constants.js";
 
-// 상수 정의
-const AGENDA_CREATED_EVENT = "event AgendaCreated(address indexed from,uint256 indexed id,address[] targets,uint128 noticePeriodSeconds,uint128 votingPeriodSeconds,bool atomicExecute)";
-const SIGNATURE_MESSAGE_TEMPLATE = "I am the one who submitted agenda #%d via transaction %s. This signature proves that I am the one who submitted this agenda.";
+// Transaction interface for ethers.js
+interface Transaction {
+  from: string;
+  to: string;
+  data: string;
+  hash: string;
+  blockNumber: number | null;
+  blockHash: string | null;
+  index: number | null;
+  confirmations: number;
+  gasLimit: bigint;
+  gasPrice: bigint | null;
+  maxFeePerGas: bigint | null;
+  maxPriorityFeePerGas: bigint | null;
+  nonce: number;
+  type: number | null;
+  value: bigint;
+}
 
-const abiAgendaCreate = [
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "targets",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "noticePeriodSeconds",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "votingPeriodSeconds",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "atomicExecute",
-        "type": "bool"
-      }
-    ],
-    "name": "AgendaCreated",
-    "type": "event"
-  }
-]
+// Event interface creation (loaded from ABI configuration)
+const agendaCreatedEventInterface = ContractInterfaces.DAO;
 
-// 이벤트 인터페이스 생성
-export const iface = new ethers.Interface(abiAgendaCreate);
-
-// 이벤트 타입 정의
+// Event type definition (updated to match actual contract ABI)
 interface AgendaCreatedEvent {
   from: string;
   id: bigint;
@@ -64,43 +40,61 @@ interface AgendaCreatedEvent {
   atomicExecute: boolean;
 }
 
-// 에러 메시지
-const ERROR_MESSAGES = {
-  TRANSACTION_NOT_FOUND: (hash?: string) => `Transaction not found${hash ? `: ${hash}` : ''}`,
-  RECEIPT_NOT_FOUND: (hash?: string) => `Transaction receipt not found${hash ? `: ${hash}` : ''}`,
-  EVENT_NOT_FOUND: (hash?: string) => `AgendaCreated event not found in transaction logs${hash ? `: ${hash}` : ''}`,
-  EVENT_DEFINITION_NOT_FOUND: "AgendaCreated event definition not found",
-  EVENT_PARSE_FAILED: (hash?: string, error?: string) =>
-    `Failed to parse AgendaCreated event log${hash ? `: ${hash}` : ''}${error ? `. Error: ${error}` : ''}`,
-  SIGNATURE_MISMATCH: (recovered: string, expected: string) =>
-    `Signature does not match expected address. Recovered: ${recovered}, Expected: ${expected}`,
-  SENDER_MISMATCH: (actual: string, expected: string) =>
-    `Transaction sender does not match expected address. Actual: ${actual}, Expected: ${expected}`,
-  ID_MISMATCH: (actual: string, expected: string) =>
-    `Agenda ID from event does not match expected ID. Actual: ${actual}, Expected: ${expected}`,
-  INVALID_EVENT_DATA: (field: string, value: unknown) =>
-    `Invalid event data: ${field} = ${JSON.stringify(value)}`
-} as const;
+
 
 export const AgendaValidator = {
-  validateSchema(data: unknown) {
-    return AgendaMetadataSchema.safeParse(data);
+  /**
+   * Validates if signature timestamp is within 1 hour from current time
+   */
+  validateSignatureTimestamp(timestamp: string): boolean {
+    try {
+      const signatureTime = new Date(timestamp);
+
+      // Check if it's a valid date
+      if (isNaN(signatureTime.getTime())) {
+        console.error(ERROR_MESSAGES.INVALID_TIMESTAMP(timestamp));
+        return false;
+      }
+
+      const currentTime = new Date();
+      const timeDiff = Math.abs(currentTime.getTime() - signatureTime.getTime());
+
+      if (timeDiff > TIME_CONSTANTS.SIGNATURE_VALID_DURATION) {
+        console.error(ERROR_MESSAGES.SIGNATURE_EXPIRED(
+          signatureTime.toISOString(),
+          currentTime.toISOString()
+        ));
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error validating signature timestamp:", error);
+      return false;
+    }
   },
 
-  getAgendaSignatureMessage(agendaId: number, transactionHash: string): string {
-    return SIGNATURE_MESSAGE_TEMPLATE.replace("%d", agendaId.toString()).replace("%s", transactionHash);
-  },
-
+  /**
+   * Validates agenda signature
+   */
   async validateAgendaSignature(
-    agendaId: number,
-    transactionHash: string,
-    signature: string,
-    expectedAddress: string
+    metadata: AgendaMetadata,
+    isUpdate: boolean = false
   ): Promise<boolean> {
     try {
-      const message = this.getAgendaSignatureMessage(agendaId, transactionHash);
-      const recovered = verifyMessage(message, signature);
-      const isValid = recovered.toLowerCase() === expectedAddress.toLowerCase();
+      const { creator, id, transaction } = metadata;
+      const timestamp = isUpdate ? metadata.updatedAt! : metadata.createdAt;
+
+      // 1. Validate signature timestamp (within 1 hour)
+      if (!this.validateSignatureTimestamp(timestamp)) {
+        return false;
+      }
+
+      // 2. Generate signature message and validate
+      const message = this.getAgendaSignatureMessage(id, transaction, timestamp, isUpdate);
+      const recovered = ethers.verifyMessage(message, creator.signature);
+      const expectedAddress = creator.address.toLowerCase();
+      const isValid = recovered.toLowerCase() === expectedAddress;
 
       if (!isValid) {
         console.error(ERROR_MESSAGES.SIGNATURE_MISMATCH(
@@ -116,9 +110,12 @@ export const AgendaValidator = {
     }
   },
 
-  validateTransactionSender(tx: TransactionResponse, expectedSender: string): boolean {
+  /**
+   * Validates transaction sender
+   */
+  validateTransactionSender(tx: Transaction, expectedSender: string): boolean {
     if (!tx) {
-      throw new Error(ERROR_MESSAGES.TRANSACTION_NOT_FOUND());
+      throw new Error("Transaction not found");
     }
 
     const isValid = tx.from.toLowerCase() === expectedSender.toLowerCase();
@@ -128,76 +125,88 @@ export const AgendaValidator = {
         expectedSender.toLowerCase()
       ));
     }
-
     return isValid;
   },
 
-  validateAgendaIdFromEvent(receipt: TransactionReceipt, expectedId: number): boolean {
-    if (!receipt) {
-      throw new Error(ERROR_MESSAGES.RECEIPT_NOT_FOUND());
-    }
-
-    const event = iface.getEvent("AgendaCreated");
-    if (!event) {
-      throw new Error(ERROR_MESSAGES.EVENT_DEFINITION_NOT_FOUND);
-    }
-
-    const eventTopic = event.topicHash;
-
-    const log = receipt.logs.find(l => l.topics[0] === eventTopic);
-    if (!log) {
-      throw new Error(ERROR_MESSAGES.EVENT_NOT_FOUND(receipt.hash));
-    }
-
+  /**
+   * Validates agenda ID from transaction event
+   */
+  validateAgendaIdFromEvent(tx: any, expectedAgendaId: number): boolean {
     try {
-      const parsed = iface.parseLog(log);
-
-      if (!parsed) {
-        throw new Error("Failed to parse event log");
+      if (!tx) {
+        throw new Error("Transaction receipt not found");
       }
 
-      const eventData = parsed.args as unknown as AgendaCreatedEvent;
-
-      // 이벤트 데이터 유효성 검사
-      if (!eventData.from || typeof eventData.from !== 'string') {
-        throw new Error(ERROR_MESSAGES.INVALID_EVENT_DATA('from', eventData.from));
-      }
-      if (!eventData.id || typeof eventData.id !== 'bigint') {
-        throw new Error(ERROR_MESSAGES.INVALID_EVENT_DATA('id', eventData.id));
-      }
-      if (!Array.isArray(eventData.targets)) {
-        throw new Error(ERROR_MESSAGES.INVALID_EVENT_DATA('targets', eventData.targets));
-      }
-      if (!eventData.noticePeriodSeconds || typeof eventData.noticePeriodSeconds !== 'bigint') {
-        throw new Error(ERROR_MESSAGES.INVALID_EVENT_DATA('noticePeriodSeconds', eventData.noticePeriodSeconds));
-      }
-      if (!eventData.votingPeriodSeconds || typeof eventData.votingPeriodSeconds !== 'bigint') {
-        throw new Error(ERROR_MESSAGES.INVALID_EVENT_DATA('votingPeriodSeconds', eventData.votingPeriodSeconds));
-      }
-      if (typeof eventData.atomicExecute !== 'boolean') {
-        throw new Error(ERROR_MESSAGES.INVALID_EVENT_DATA('atomicExecute', eventData.atomicExecute));
+      if (!tx.logs || tx.logs.length === 0) {
+        throw new Error("AgendaCreated event not found in transaction logs");
       }
 
-      const eventId = eventData.id.toString();
-      // console.log('eventId', eventId)
-      // console.log('expectedId.toString()', expectedId.toString())
+      let hasAgendaCreatedEvent = false;
 
-      const isValid = eventId === expectedId.toString();
-      // console.log('isValid', isValid)
+      for (const log of tx.logs) {
+        try {
+          const parsedLog = agendaCreatedEventInterface.parseLog({
+            topics: log.topics,
+            data: log.data
+          });
 
+          if (parsedLog && parsedLog.name === 'AgendaCreated') {
+            hasAgendaCreatedEvent = true;
+            const eventData = parsedLog.args as unknown as AgendaCreatedEvent;
+            const eventAgendaId = Number(eventData.id); // Changed from agendaId to id
 
-      if (!isValid) {
-        console.error(ERROR_MESSAGES.ID_MISMATCH(
-          eventId,
-          expectedId.toString()
-        ));
+            // Event data validation
+            if (eventAgendaId !== expectedAgendaId) {
+              console.error(ERROR_MESSAGES.AGENDA_ID_MISMATCH(eventAgendaId, expectedAgendaId));
+              return false;
+            }
+
+            return true;
+          }
+        } catch (parseError) {
+          // If this looks like an AgendaCreated event but fails to parse, throw specific error
+          const agendaCreatedTopic = agendaCreatedEventInterface.getEvent('AgendaCreated')?.topicHash;
+          if (log.topics && log.topics[0] === agendaCreatedTopic) {
+            throw new Error(`Failed to parse AgendaCreated event log. Error: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+          }
+          // Continue to next log if parsing fails for other events
+          continue;
+        }
       }
-      return isValid;
+
+      if (!hasAgendaCreatedEvent) {
+        throw new Error("AgendaCreated event not found in transaction logs");
+      }
+
+      return false;
     } catch (error) {
-      throw new Error(ERROR_MESSAGES.EVENT_PARSE_FAILED(
-        receipt.hash,
-        error instanceof Error ? error.message : String(error)
-      ));
+      throw error;
+    }
+  },
+
+  /**
+   * Generates signature message
+   */
+  getAgendaSignatureMessage(
+    agendaId: number,
+    txHash: string,
+    timestamp: string,
+    isUpdate: boolean = false
+  ): string {
+    return isUpdate
+      ? SIGNATURE_MESSAGES.UPDATE(agendaId, txHash, timestamp)
+      : SIGNATURE_MESSAGES.CREATE(agendaId, txHash, timestamp);
+  },
+
+  /**
+   * Validates schema using Zod
+   */
+  validateSchema(metadata: any): { success: boolean; error?: any } {
+    try {
+      const result = AgendaMetadataSchema.safeParse(metadata);
+      return result;
+    } catch (error) {
+      return { success: false, error };
     }
   }
 };

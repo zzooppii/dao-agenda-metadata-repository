@@ -1,0 +1,45 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address[]",
+            "name": "targets",
+            "type": "address[]"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint128",
+            "name": "noticePeriodSeconds",
+            "type": "uint128"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint128",
+            "name": "votingPeriodSeconds",
+            "type": "uint128"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "atomicExecute",
+            "type": "bool"
+          }
+        ],
+        "name": "AgendaCreated",
+        "type": "event"
+      }
+]

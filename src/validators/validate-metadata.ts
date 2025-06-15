@@ -1,378 +1,443 @@
-import fs from "fs";
-import path from "path";
-import { JsonRpcProvider, TransactionResponse, TransactionReceipt } from "ethers";
-import { AgendaValidator } from "./agenda-validator.js";
-import dotenv from "dotenv";
-import { readFileSync } from "fs";
-import { parseArgs } from "node:util";
+#!/usr/bin/env node
+
 import { ethers } from "ethers";
+import { AgendaValidator } from "./agenda-validator.js";
+import { AgendaMetadata, AgendaMetadataSchema } from "../types/agenda-metadata.js";
+import { getRpcUrl } from "../config/rpc.js";
+import { readFileSync, existsSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
-// 환경 변수 로드 (로컬 개발 환경용)
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config();
-}
+// Load environment variables (for local development)
+import dotenv from "dotenv";
+dotenv.config();
 
-// 상수 정의
-const NETWORKS = ["mainnet", "sepolia"] as const;
-const AGENDA_FILE_PATTERN = /^agenda-(\d+)\.json$/;
-const AGENDA_PATH_PATTERN = /^data\/agendas\/(mainnet|sepolia)\//;
-const PR_TITLE_PATTERN = /^\[Agenda\]\s+(mainnet|sepolia)\s*-\s*(\d+)\s*-\s*(.+)$/;
-const ETH_ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
-const TRANSACTION_HASH_PATTERN = /^0x[a-fA-F0-9]{64}$/;
-const SIGNATURE_PATTERN = /^0x[a-fA-F0-9]{130}$/;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-// 타입 정의
-type Network = typeof NETWORKS[number];
-
-interface PrTitleInfo {
-  network: Network;
-  id: number;
-  title: string;
-}
-
-interface AbiItem {
-  inputs: Array<{
-    internalType: string;
-    name: string;
-    type: string;
-  }>;
-  name: string;
-  outputs: Array<{
-    internalType: string;
-    name: string;
-    type: string;
-  }>;
-  stateMutability: string;
-  type: string;
-}
-
-interface AgendaMetadata {
-  id: number;
-  title: string;
-  description: string;
-  network: Network;
-  transaction: string;
-  creator: {
-    address: string;
-    signature: string;
-  };
-  actions: Array<{
-    title: string;
-    contractAddress: string;
-    method: string;
-    calldata: string;
-    abi: AbiItem[];
-    sendEth: boolean;
-    id: string;
-    type: string;
-  }>;
-}
-
-// 주소 정규화 함수
-function normalizeAddress(address: string): string {
-  return address.toLowerCase();
-}
-
-function parsePrTitle(title: string): PrTitleInfo | null {
-  const match = title.match(PR_TITLE_PATTERN);
-  if (!match) return null;
-  return {
-    network: match[1] as Network,
-    id: Number(match[2]),
-    title: match[3].trim(),
-  };
-}
-
-function getRpcUrl(network: Network): string {
-  const rpcUrl = network === "mainnet" ? process.env.MAINNET_RPC_URL : process.env.SEPOLIA_RPC_URL;
-  if (!rpcUrl) {
-    throw new Error(`Missing RPC URL for network: ${network}. Please check your .env file.`);
-  }
-  return rpcUrl;
-}
-
-async function validateFile(filePath: string, prTitle?: string): Promise<boolean> {
+// Check file existence using GitHub raw URL for main branch
+async function checkFileExistsOnGitHub(filePath: string): Promise<boolean> {
   try {
-    if (!prTitle) {
-      throw new Error("PR title is required");
-    }
+    const githubRawUrl = `https://raw.githubusercontent.com/tokamak-network/dao-agenda-metadata-repository/main/${filePath}`;
+    const response = await fetch(githubRawUrl, { method: 'HEAD' });
+    return response.ok;
+  } catch (error) {
+    console.warn(`Warning: Could not check file existence on GitHub: ${error}`);
+    return false;
+  }
+}
 
-    const parsedPrTitle = parsePrTitle(prTitle);
-    if (!parsedPrTitle) {
-      throw new Error(`PR title must be in the form [Agenda] <network> - <id> - <title>`);
-    }
+// Check if file exists locally
+function checkFileExistsLocally(filePath: string): boolean {
+  try {
+    return existsSync(filePath);
+  } catch (error) {
+    return false;
+  }
+}
 
-    // 파일 경로에서 network 추출
-    const match = filePath.match(AGENDA_PATH_PATTERN);
-    const pathNetwork = match ? match[1] as Network : null;
-
-    if (!pathNetwork || !NETWORKS.includes(pathNetwork)) {
-      throw new Error(`Invalid network in file path: ${pathNetwork}. Must be one of: ${NETWORKS.join(", ")}`);
-    }
-
-    // 파일명에서 id 추출
-    const fileName = path.basename(filePath);
-    const fileNameMatch = fileName.match(AGENDA_FILE_PATTERN);
-    const fileId = fileNameMatch ? Number(fileNameMatch[1]) : null;
-
-    if (!fileId) {
-      throw new Error(`File name must be in the form agenda-<id>.json (got: ${fileName})`);
-    }
-
-    const raw = fs.readFileSync(filePath, "utf-8");
-    const data = JSON.parse(raw) as AgendaMetadata;
-
-    // 필수 필드 검증
-    if (!data.transaction) {
-      throw new Error("Transaction hash is required");
-    }
-    if (!data.creator) {
-      throw new Error("Creator information is required");
-    }
-    if (!data.creator.address) {
-      throw new Error("Creator address is required");
-    }
-    if (!data.creator.signature) {
-      throw new Error("Creator signature is required");
-    }
-    if (!Array.isArray(data.actions) || data.actions.length === 0) {
-      throw new Error("At least one action is required");
-    }
-
-    // 주소 형식 검증
-    if (!data.creator.address.match(ETH_ADDRESS_PATTERN)) {
-      throw new Error(`Invalid creator address format: ${data.creator.address}`);
-    }
-
-    // 서명 형식 검증
-    if (!data.creator.signature.match(SIGNATURE_PATTERN)) {
-      throw new Error(`Invalid signature format: ${data.creator.signature}`);
-    }
-
-    // 트랜잭션 해시 형식 검증
-    if (!data.transaction.match(TRANSACTION_HASH_PATTERN)) {
-      throw new Error(`Invalid transaction hash format: ${data.transaction}`);
-    }
-
-    // actions 배열 검증
-    for (const [index, action] of data.actions.entries()) {
-      if (!action.contractAddress.match(ETH_ADDRESS_PATTERN)) {
-        throw new Error(`Invalid contract address format in action ${index}: ${action.contractAddress}`);
-      }
-      if (!action.method) {
-        throw new Error(`Method is required in action ${index}`);
-      }
-      if (!action.calldata) {
-        throw new Error(`Calldata is required in action ${index}`);
-      }
-      if (!Array.isArray(action.abi)) {
-        throw new Error(`ABI must be an array in action ${index}`);
-      }
-    }
-
-    // 파일명과 id 일치 검증
-    if (fileId !== data.id) {
-      throw new Error(`File name id (${fileId}) does not match metadata id (${data.id})`);
-    }
-
-    // PR 제목과 메타데이터 값 비교
-    if (parsedPrTitle.network !== data.network) {
-      throw new Error(`PR title network (${parsedPrTitle.network}) does not match metadata network (${data.network})`);
-    }
-    if (parsedPrTitle.id !== data.id) {
-      throw new Error(`PR title id (${parsedPrTitle.id}) does not match metadata id (${data.id})`);
-    }
-    if (parsedPrTitle.title !== data.title) {
-      throw new Error(`PR title title (${parsedPrTitle.title}) does not match metadata title (${data.title})`);
-    }
-
-    // 파일 경로와 network 값 비교
-    if (pathNetwork !== data.network) {
-      throw new Error(`File path network (${pathNetwork}) does not match metadata network (${data.network})`);
-    }
-
-    // 네트워크 값 검증
-    if (!NETWORKS.includes(data.network)) {
-      throw new Error(`Invalid network in metadata: ${data.network}. Must be one of: ${NETWORKS.join(", ")}`);
-    }
-
-    const result = AgendaValidator.validateSchema(data);
-    if (!result.success) {
-      throw new Error(`Schema validation failed: ${JSON.stringify(result.error.issues, null, 2)}`);
-    }
-
-    // 트랜잭션 검증
-    const provider = new JsonRpcProvider(getRpcUrl(data.network));
-    let retryCount = 0;
-    const maxRetries = 3;
-
-    // 트랜잭션 조회 및 이벤트 검증 (재시도 로직 포함)
-    let tx: TransactionResponse | null = null;
-    let receipt: TransactionReceipt | null = null;
-
-    while (retryCount < maxRetries) {
-      try {
-        tx = await provider.getTransaction(data.transaction);
-        if (!tx) throw new Error(`Transaction not found: ${data.transaction}`);
-
-        receipt = await provider.getTransactionReceipt(data.transaction);
-        if (!receipt) throw new Error(`Transaction receipt not found: ${data.transaction}`);
-
-        // 트랜잭션 상태 검증
-        if (receipt.status === 0) {
-          throw new Error(`Transaction failed: ${data.transaction}`);
-        }
-
-        break;
-      } catch (error) {
-        retryCount++;
-        if (retryCount === maxRetries) {
-          throw error;
-        }
-        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-      }
-    }
-
-    if (!tx || !receipt) {
-      throw new Error(`Failed to get transaction data after ${maxRetries} retries`);
-    }
-
-    const normalizedCreatorAddress = normalizeAddress(data.creator.address);
-    const normalizedTxFrom = normalizeAddress(tx.from);
-
-    const txCheck = AgendaValidator.validateTransactionSender(tx, data.creator.address);
-    if (!txCheck) {
-      throw new Error(
-        `Transaction sender does not match creator address.\n` +
-        `Expected: ${normalizedCreatorAddress}\n` +
-        `Got: ${normalizedTxFrom}`
-      );
-    }
-
-    const idCheck = AgendaValidator.validateAgendaIdFromEvent(receipt, data.id);
-    if (!idCheck) {
-      throw new Error(`AgendaCreated event id does not match metadata id (${data.id})`);
-    }
-
-    // 서명 검증 (재시도 없음)
-    const sigCheck = await AgendaValidator.validateAgendaSignature(
-      data.id,
-      data.transaction,
-      data.creator.signature,
-      data.creator.address
-    );
-    if (!sigCheck) {
-      const message = AgendaValidator.getAgendaSignatureMessage(data.id, data.transaction);
-      const recovered = ethers.verifyMessage(message, data.creator.signature);
-      throw new Error(
-        `Creator signature is invalid or does not match creator address.\n` +
-        `Expected: ${normalizedCreatorAddress}\n` +
-        `Recovered: ${normalizeAddress(recovered)}\n` +
-        `Message: ${message}`
-      );
-    }
-
-    console.log(`✅ ${filePath} is valid.`);
+// Check file existence (local first, then GitHub)
+async function checkFileExists(filePath: string): Promise<boolean> {
+  const localExists = checkFileExistsLocally(filePath);
+  if (localExists) {
     return true;
+  }
+
+  return await checkFileExistsOnGitHub(filePath);
+}
+
+// Validation step type definition
+type ValidationStep =
+| 'schema'           // Schema validation
+| 'format'           // File format and path validation
+| 'pr-title'         // PR title consistency validation
+| 'time'             // Time validation (1-hour rule)
+| 'signature'        // Signature validation
+| 'transaction'      // Transaction validation
+| 'all';             // All validations
+
+type ValidationSteps = ValidationStep[];
+
+// Individual validation functions
+async function validateSchema(metadata: AgendaMetadata): Promise<boolean> {
+  try {
+    const result = AgendaMetadataSchema.safeParse(metadata);
+    if (!result.success) {
+      console.error("❌ Schema validation failed:", result.error.errors);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("❌ Schema validation error:", error);
+    return false;
+  }
+}
+
+// Extract network from file path
+function extractNetworkFromPath(filePath: string): string | null {
+  const match = filePath.match(/data\/agendas\/([^\/]+)\//);
+  return match ? match[1] : null;
+}
+
+// Extract ID from filename
+function extractIdFromFilename(filePath: string): number | null {
+  const match = filePath.match(/agenda-(\d+)\.json$/);
+  return match ? parseInt(match[1], 10) : null;
+}
+
+async function validateFormat(metadata: AgendaMetadata, filePath: string): Promise<boolean> {
+  try {
+    // Extract network and ID from file path
+    const networkFromPath = extractNetworkFromPath(filePath);
+    const idFromFilename = extractIdFromFilename(filePath);
+
+    if (!networkFromPath) {
+      console.error("❌ Could not extract network from file path:", filePath);
+      return false;
+    }
+
+    if (idFromFilename === null) {
+      console.error("❌ Could not extract ID from filename:", filePath);
+      return false;
+    }
+
+    // Validate network consistency
+    if (metadata.network !== networkFromPath) {
+      console.error(`❌ Network mismatch: metadata.network="${metadata.network}", path network="${networkFromPath}"`);
+      return false;
+    }
+
+    // Validate ID consistency
+    if (metadata.id !== idFromFilename) {
+      console.error(`❌ ID mismatch: metadata.id=${metadata.id}, filename ID=${idFromFilename}`);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ Format validation error:", error);
+    return false;
+  }
+}
+
+async function validatePrTitle(metadata: AgendaMetadata, filePath: string, prTitle: string): Promise<boolean> {
+  try {
+    const isUpdate = !!metadata.updatedAt;
+    const expectedPrefix = isUpdate ? "[Agenda Update]" : "[Agenda]";
+    const expectedPattern = `${expectedPrefix} ${metadata.network} - ${metadata.id} - `;
+
+    if (!prTitle.startsWith(expectedPattern)) {
+      console.error(`❌ PR title format error:`);
+      console.error(`   Expected: "${expectedPattern}<title>"`);
+      console.error(`   Actual: "${prTitle}"`);
+      return false;
+    }
+
+    // Check file existence based on operation type
+    const fileExists = await checkFileExists(filePath);
+
+    if (isUpdate && !fileExists) {
+      console.error(`❌ Update operation requires existing file, but ${filePath} does not exist`);
+      return false;
+    }
+
+    if (!isUpdate && fileExists) {
+      console.error(`❌ Create operation requires new file, but ${filePath} already exists`);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ PR title validation error:", error);
+    return false;
+  }
+}
+
+async function validateTime(metadata: AgendaMetadata): Promise<boolean> {
+  try {
+    const isUpdate = !!metadata.updatedAt;
+    const timestampToCheck = isUpdate ? metadata.updatedAt! : metadata.createdAt;
+
+    if (!AgendaValidator.validateSignatureTimestamp(timestampToCheck)) {
+      return false;
+    }
+
+    // For updates, check that updatedAt is later than createdAt
+    if (isUpdate) {
+      const createdTime = new Date(metadata.createdAt);
+      const updatedTime = new Date(metadata.updatedAt!);
+
+      if (updatedTime <= createdTime) {
+        console.error(`❌ updatedAt must be later than createdAt`);
+        console.error(`   createdAt: ${metadata.createdAt}`);
+        console.error(`   updatedAt: ${metadata.updatedAt}`);
+        return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ Time validation error:", error);
+    return false;
+  }
+}
+
+async function validateSignature(metadata: AgendaMetadata): Promise<boolean> {
+  try {
+    const isUpdate = !!metadata.updatedAt;
+    return await AgendaValidator.validateAgendaSignature(metadata, isUpdate);
+  } catch (error) {
+    console.error("❌ Signature validation error:", error);
+    return false;
+  }
+}
+
+async function validateTransaction(metadata: AgendaMetadata): Promise<boolean> {
+  try {
+    const rpcUrl = getRpcUrl(metadata.network);
+    const provider = new ethers.JsonRpcProvider(rpcUrl);
+
+    // Get transaction
+    const tx = await provider.getTransaction(metadata.transaction);
+    if (!tx) {
+      console.error(`❌ Transaction not found: ${metadata.transaction}`);
+      return false;
+    }
+
+    // Validate transaction sender
+    if (!AgendaValidator.validateTransactionSender(tx, metadata.creator.address)) {
+      return false;
+    }
+
+    // Validate calldata
+    if (!validateCalldata(tx, metadata)) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ Transaction validation error:", error);
+    return false;
+  }
+}
+
+// Validate calldata consistency
+function validateCalldata(tx: any, metadata: AgendaMetadata): boolean {
+  try {
+    // Decode TON.approveAndCall transaction data
+    const approveAndCallInterface = new ethers.Interface([
+      "function approveAndCall(address spender, uint256 amount, bytes data)"
+    ]);
+
+    let decodedData;
+    try {
+      decodedData = approveAndCallInterface.decodeFunctionData("approveAndCall", tx.data);
+    } catch (error) {
+      console.error("❌ Failed to decode approveAndCall data:", error);
+      return false;
+    }
+
+    const callData = decodedData[2]; // data parameter
+
+    // Try to decode as agenda parameters (both legacy and new versions)
+    let agendaParams;
+    try {
+      // Try new version first (with memo)
+      agendaParams = ethers.AbiCoder.defaultAbiCoder().decode(
+        ["address[]", "uint128", "uint128", "bool", "bytes[]", "string"],
+        callData
+      );
+    } catch (error) {
+      try {
+        // Try legacy version (without memo)
+        agendaParams = ethers.AbiCoder.defaultAbiCoder().decode(
+          ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+          callData
+        );
+      } catch (legacyError) {
+        console.error("❌ Failed to decode agenda parameters:", error);
+        return false;
+      }
+    }
+
+    const [addresses, , , , calldatas, memo] = agendaParams;
+
+    // Validate addresses array
+    const metadataAddresses = metadata.actions.map(action => action.contractAddress.toLowerCase());
+    const txAddresses = addresses.map((addr: string) => addr.toLowerCase());
+
+    if (JSON.stringify(metadataAddresses) !== JSON.stringify(txAddresses)) {
+      console.error("❌ Actions contractAddress array does not match transaction addresses");
+      console.error("   Metadata addresses:", metadataAddresses);
+      console.error("   Transaction addresses:", txAddresses);
+      return false;
+    }
+
+    // Validate calldata array
+    const metadataCalldatas = metadata.actions.map(action => action.calldata.toLowerCase());
+    const txCalldatas = calldatas.map((data: string) => data.toLowerCase());
+
+    if (JSON.stringify(metadataCalldatas) !== JSON.stringify(txCalldatas)) {
+      console.error("❌ Actions calldata array does not match transaction calldatas");
+      console.error("   Metadata calldatas:", metadataCalldatas);
+      console.error("   Transaction calldatas:", txCalldatas);
+      return false;
+    }
+
+    // Validate memo (new version only)
+    if (memo !== undefined) {
+      const metadataMemo = metadata.snapshotUrl || metadata.discourseUrl || "";
+      if (memo !== metadataMemo) {
+        console.error("❌ Memo does not match snapshotUrl/discourseUrl");
+        console.error("   Transaction memo:", memo);
+        console.error("   Metadata memo:", metadataMemo);
+        return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error("❌ Calldata validation error:", error);
+    return false;
+  }
+}
+
+// Main validation function
+export async function validateMetadata(
+  filePath: string,
+  prTitle: string,
+  steps: ValidationSteps = ['all']
+): Promise<boolean> {
+  try {
+    console.log(`🚀 Starting validation with steps: ${steps.join(', ')}`);
+
+    // Read and parse metadata file
+    const fileContent = readFileSync(filePath, 'utf-8');
+    const metadata: AgendaMetadata = JSON.parse(fileContent);
+
+    // Determine which steps to run
+    const stepsToRun = steps.includes('all') ?
+      ['schema', 'format', 'pr-title', 'time', 'signature', 'transaction'] :
+      steps;
+
+    // Run validation steps
+    for (const step of stepsToRun) {
+      console.log(`🔍 Running ${step} validation...`);
+
+      let isValid = false;
+      switch (step) {
+        case 'schema':
+          isValid = await validateSchema(metadata);
+          break;
+        case 'format':
+          isValid = await validateFormat(metadata, filePath);
+          break;
+        case 'pr-title':
+          isValid = await validatePrTitle(metadata, filePath, prTitle);
+          break;
+        case 'time':
+          isValid = await validateTime(metadata);
+          break;
+        case 'signature':
+          isValid = await validateSignature(metadata);
+          break;
+        case 'transaction':
+          isValid = await validateTransaction(metadata);
+          break;
+        default:
+          console.error(`❌ Unknown validation step: ${step}`);
+          return false;
+      }
+
+      if (!isValid) {
+        console.error(`❌ ${step} validation failed`);
+        return false;
+      }
+
+      console.log(`✅ ${step.charAt(0).toUpperCase() + step.slice(1)} validation passed`);
+    }
+
+    console.log(`✅ ${filePath} is valid (${stepsToRun.join(', ')} validations passed).`);
+    return true;
+
   } catch (error) {
     console.error(`❌ ${filePath} error:`, error instanceof Error ? error.message : error);
     return false;
   }
 }
 
-// 메인 로직
-(async () => {
+// CLI interface
+if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
-  const files: string[] = [];
-  let prTitleArg: string | undefined;
 
-  // 명령행 인자 파싱
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+Usage: npm run validate -- [--pr-title '<PR_TITLE>'] [--check <steps>] <file1.json> [file2.json ...]
+
+Options:
+  --pr-title <title>    PR title for validation (required)
+  --check <steps>       Comma-separated validation steps to run (default: all)
+                        Available steps: schema, format, pr-title, time, signature, transaction, all
+  --help, -h           Show this help message
+
+Examples:
+  npm run validate -- --pr-title "[Agenda] sepolia - 123 - Test Agenda" data/agendas/sepolia/agenda-123.json
+  npm run validate -- --pr-title "[Agenda Update] mainnet - 456 - Updated Agenda" --check schema,time data/agendas/mainnet/agenda-456.json
+  npm run validate -- --pr-title "[Agenda] sepolia - 789 - New Agenda" --check signature data/agendas/sepolia/agenda-789.json
+
+Validation Steps:
+  schema        - JSON schema validation
+  format        - File format and path validation
+  pr-title      - PR title consistency validation
+  time          - Time validation (1-hour rule)
+  signature     - Creator signature validation
+  transaction   - On-chain transaction validation
+  all           - Run all validation steps (default)
+
+Environment Variables:
+  PR_TITLE             Alternative way to provide PR title
+    `);
+    process.exit(0);
+  }
+
+  // Parse arguments
+  let prTitle = process.env.PR_TITLE || '';
+  let checkSteps: ValidationSteps = ['all'];
+  const files: string[] = [];
+
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--pr-title" && i + 1 < args.length) {
-      prTitleArg = args[i + 1];
-      i++;
-    } else {
-      files.push(args[i]);
+    const arg = args[i];
+
+    if (arg === '--pr-title' && i + 1 < args.length) {
+      prTitle = args[i + 1];
+      i++; // Skip next argument
+    } else if (arg === '--check' && i + 1 < args.length) {
+      checkSteps = args[i + 1].split(',') as ValidationSteps;
+      i++; // Skip next argument
+    } else if (!arg.startsWith('--')) {
+      files.push(arg);
     }
+  }
+
+  // Validate arguments
+  if (!prTitle) {
+    console.error('❌ PR title is required. Use --pr-title option or set PR_TITLE environment variable.');
+    process.exit(1);
   }
 
   if (files.length === 0) {
-    console.error("Usage: ts-node src/validators/validate-metadata.ts [--pr-title '<PR_TITLE>'] <file1.json> [file2.json ...]");
+    console.error('❌ At least one file path is required.');
     process.exit(1);
   }
 
-  if (files.length > 1) {
-    console.error("❌ Only one metadata file is allowed per PR.");
-    process.exit(1);
+  // Validate files
+  let allValid = true;
+  for (const file of files) {
+    const isValid = await validateMetadata(file, prTitle, checkSteps);
+    if (!isValid) {
+      allValid = false;
+    }
   }
 
-  const prTitle = prTitleArg || process.env.PR_TITLE;
-  const results = await Promise.all(files.map(file => validateFile(file, prTitle)));
-
-  if (results.some(result => !result)) {
-    process.exit(2);
-  }
-  process.exit(0);
-})();
-
-export async function validateMetadata(
-  metadata: AgendaMetadata,
-  agendaId: number,
-  transactionHash: string,
-  signature: string,
-  expectedAddress: string
-): Promise<boolean> {
-  try {
-    // 1. Validate schema
-    const schemaResult = AgendaValidator.validateSchema(metadata);
-    if (!schemaResult.success) {
-      throw new Error(`Schema validation failed: ${JSON.stringify(schemaResult.error.issues, null, 2)}`);
-    }
-
-    // 2. Validate signature
-    const signatureValid = await AgendaValidator.validateAgendaSignature(
-      agendaId,
-      transactionHash,
-      signature,
-      expectedAddress
-    );
-    if (!signatureValid) {
-      throw new Error(`Invalid signature for address: ${expectedAddress}`);
-    }
-
-    // 3. Validate transaction
-    const rpcUrl = metadata.network === "mainnet"
-      ? process.env.MAINNET_RPC_URL
-      : process.env.SEPOLIA_RPC_URL;
-    if (!rpcUrl) throw new Error(`Missing RPC URL for network: ${metadata.network}`);
-    const provider = new JsonRpcProvider(rpcUrl);
-
-    const tx = await provider.getTransaction(transactionHash);
-    if (!tx) {
-      throw new Error(`Transaction not found: ${transactionHash}`);
-    }
-
-    const senderValid = AgendaValidator.validateTransactionSender(tx, expectedAddress);
-    if (!senderValid) {
-      throw new Error(`Transaction sender (${tx.from}) does not match expected address (${expectedAddress})`);
-    }
-
-    // 4. Validate agenda ID from event
-    const receipt = await provider.getTransactionReceipt(transactionHash);
-    if (!receipt) {
-      throw new Error(`Transaction receipt not found: ${transactionHash}`);
-    }
-
-    const agendaIdValid = AgendaValidator.validateAgendaIdFromEvent(receipt, agendaId);
-    if (!agendaIdValid) {
-      throw new Error(`Agenda ID from event does not match expected ID: ${agendaId}`);
-    }
-
-    return true;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Metadata validation failed: ${error.message}`);
-    }
-    throw error;
-  }
+  process.exit(allValid ? 0 : 1);
 }

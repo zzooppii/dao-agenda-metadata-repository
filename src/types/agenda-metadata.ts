@@ -33,9 +33,9 @@ const ActionSchema = z.object({
   method: functionSignatureSchema,
   calldata: hexStringSchema,
   abi: z.array(AbiItemSchema),
-  sendEth: z.boolean(),
-  id: z.string().min(1),
-  type: z.string().min(1)
+  sendEth: z.boolean().default(false).optional(),
+  id: z.string().min(1).optional(),
+  type: z.string().min(1).default("call").optional()
 });
 
 export const AgendaMetadataSchema = z.object({
@@ -48,7 +48,11 @@ export const AgendaMetadataSchema = z.object({
     address: ethereumAddressSchema,
     signature: hexStringSchema
   }),
-  actions: z.array(ActionSchema).min(1)
+  actions: z.array(ActionSchema).min(1),
+  createdAt: z.string().datetime("Invalid ISO 8601 datetime format"),
+  updatedAt: z.string().datetime("Invalid ISO 8601 datetime format").optional(),
+  snapshotUrl: z.string().url().or(z.literal("")).optional(),
+  discourseUrl: z.string().url().or(z.literal("")).optional()
 });
 
 export type AgendaMetadata = z.infer<typeof AgendaMetadataSchema>;
