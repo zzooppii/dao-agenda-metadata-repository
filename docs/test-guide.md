@@ -1,6 +1,6 @@
 # 🧪 Test Guide
 
-> **Testing execution guide**
+> **How to run tests to verify system functionality**
 
 ## 🚀 Running Tests
 
@@ -10,87 +10,53 @@ npm install
 npm test
 ```
 
-
-### Running Individual Test Files
-```bash
-# Run only Agenda Validator tests
-npm test agenda-validator.test.ts
-
-# Run only Type Definition tests
-npm test agenda-metadata.test.ts
-
-# Run only Utility tests
-npm test validation-helpers.test.ts
+### Test Results
+```
+Test Suites: 3 passed, 3 total
+Tests:       50 passed, 50 total
+Snapshots:   0 total
+Time:        3.4s
 ```
 
 ---
 
-## 📁 Test Structure
+## 📊 What Gets Tested
 
-### 1. Agenda Validator Tests (`tests/validators/agenda-validator.test.ts`)
-**29 test cases**
-- ✅ Schema validation (Zod-based)
-- ✅ Signature timestamp validation
-- ✅ Signature verification and message generation
-- ✅ Transaction sender validation
-- ✅ Event-based agenda ID validation
-- ✅ Mock event creation and validation
-- ✅ Real blockchain integration tests
-- ✅ Error case handling
-
-### 2. Type Definition Tests (`tests/types/agenda-metadata.test.ts`)
-**11 test cases**
-- ✅ Schema type validation
-- ✅ Required field validation
-- ✅ Optional field validation
-- ✅ Format validation
-
-### 3. Utility Function Tests (`tests/utils/validation-helpers.test.ts`)
-**10 test cases**
-- ✅ Helper function validation
-- ✅ Utility function edge cases
-- ✅ Error handling
-
----
-
-## 📊 Test Coverage
-
-### Current Coverage
-- **Total Tests**: 50
-- **Test Files**: 3
-- **Core Functionality**: 100% covered
-
-### Test Files Breakdown
-1. **agenda-validator.test.ts**: 29 tests (signature, schema, transaction validation, integration tests)
-2. **agenda-metadata.test.ts**: 11 tests (schema type validation)
-3. **validation-helpers.test.ts**: 10 tests (utility functions)
-
-### Coverage Areas
-- ✅ **Schema Validation**: All field types and constraints
-- ✅ **Signature Validation**: Message generation and verification
+### Core Validation
+- ✅ **Schema Validation**: JSON structure and required fields
+- ✅ **Signature Verification**: Cryptographic signature validation
 - ✅ **Transaction Validation**: On-chain data consistency
-- ✅ **Event Validation**: AgendaCreated event parsing and validation
-- ✅ **Integration Tests**: Real blockchain data validation
-- ✅ **Error Handling**: All error scenarios covered
-- ✅ **Edge Cases**: Boundary conditions and invalid inputs
+- ✅ **Time Validation**: Signature expiry and time constraints
+- ✅ **Format Validation**: File paths, naming, and data formats
+
+### Integration Testing
+- ✅ **Real Blockchain Data**: Tests with actual Sepolia transactions
+- ✅ **End-to-End Flows**: Complete validation process testing
+- ✅ **Error Scenarios**: All common error cases covered
 
 ---
 
-## 🚀 Performance
+## 🔍 Running Specific Tests
 
-### Test Execution Speed
-- **Schema Tests**: ~100ms
-- **Signature Tests**: ~500ms
-- **Integration Tests**: ~2-5s (depends on RPC)
-- **Full Suite**: ~3-4s
-
-### Optimization Tips
+### Individual Test Files
 ```bash
-# Run tests in parallel
-npm test -- --maxWorkers=4
+# Schema and validation tests
+npm test agenda-validator.test.ts
 
-# Run specific test patterns
+# Type definition tests
+npm test agenda-metadata.test.ts
+
+# Utility function tests
+npm test validation-helpers.test.ts
+```
+
+### Test Patterns
+```bash
+# Run only schema-related tests
 npm test -- --testNamePattern="schema"
+
+# Run only signature tests
+npm test -- --testNamePattern="signature"
 
 # Watch mode for development
 npm test -- --watch
@@ -98,42 +64,49 @@ npm test -- --watch
 
 ---
 
-## 🔄 Continuous Integration
+## ⚡ Performance
 
-### GitHub Actions Integration
-Tests run automatically on:
-- Pull requests
-- Push to main branch
-- Scheduled runs (daily)
+- **Full Test Suite**: ~3-4 seconds
+- **Schema Tests**: ~100ms (fastest)
+- **Signature Tests**: ~500ms (medium)
+- **Integration Tests**: ~2-5s (depends on network)
 
-### Test Commands in CI
-```yaml
-- name: Run tests
-  run: |
-    npm install
-    npm test
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Tests fail with network errors:**
+```bash
+# Check RPC connectivity
+npm test -- --testNamePattern="schema"  # Run offline tests only
+```
+
+**Slow test execution:**
+```bash
+# Run tests in parallel
+npm test -- --maxWorkers=4
+```
+
+**Specific test failures:**
+```bash
+# Run with verbose output
+npm test -- --verbose
 ```
 
 ---
 
-## 🧪 Test Categories
+## 📋 Test Coverage Summary
 
-### Unit Tests
-- Schema validation logic
-- Signature generation and verification
-- Utility functions
-- Error handling
-
-### Integration Tests
-- Real blockchain transaction validation
-- End-to-end validation flows
-- RPC provider interactions
-
-### Mock Tests
-- Event parsing with mock data
-- Transaction validation with mock responses
-- Error scenarios simulation
+| Component | Tests | Coverage |
+|-----------|-------|----------|
+| Schema Validation | 11 tests | ✅ Complete |
+| Signature System | 15 tests | ✅ Complete |
+| Transaction Validation | 14 tests | ✅ Complete |
+| Utility Functions | 10 tests | ✅ Complete |
+| **Total** | **50 tests** | **✅ 100%** |
 
 ---
 
-**💡 Need help with testing? Check the test files in the `tests/` directory for examples and patterns!**
+**💡 All tests must pass before submitting PRs. Run `npm test` to verify your changes!**

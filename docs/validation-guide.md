@@ -1,4 +1,4 @@
-# �� Validation Guide
+# 🔍 Validation Guide
 
 > **Comprehensive guide for metadata validation system**
 
@@ -55,31 +55,19 @@ Execute specific validation steps for faster debugging and development.
 | `signature` | Signature verification | Medium 🔄 | Cryptographic proof |
 | `transaction` | On-chain transaction validation | Slow 🐌 | Blockchain data |
 
-### Command Usage
+### Validation Commands
 
 ```bash
-# Individual validation steps
-npm run validate -- --check schema data/agendas/sepolia/agenda-64.json
-npm run validate -- --check signature --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
-npm run validate -- --check transaction --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
-
-# Multiple steps
-npm run validate -- --check schema,format,pr-title --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
-
-# All steps (default)
-npm run validate -- --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
-```
-
-### NPM Scripts
-
-```bash
-# Quick validation (schema + format)
+# Quick validation (schema + format only)
 npm run validate:quick -- --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
 
-# Local validation (no RPC calls)
+# Local validation (no network calls)
 npm run validate:local -- --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
 
-# Individual steps
+# Full validation (including on-chain)
+npm run validate -- --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
+
+# Individual validation steps
 npm run validate:schema -- --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
 npm run validate:signature -- --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
 npm run validate:transaction -- --pr-title "[Agenda] sepolia - 64 - Test" data/agendas/sepolia/agenda-64.json
@@ -129,33 +117,20 @@ npm run validate:transaction -- --pr-title "[Agenda] sepolia - 64 - Test" data/a
 
 ## ⚡ Performance Guide
 
-### Development Workflow
+### Recommended Workflow
 
-```bash
-# 1. Quick structure check (fastest)
-npm run validate:quick
-
-# 2. Local validation (fast, no network)
-npm run validate:local
-
-# 3. Full validation (before PR submission)
-npm run validate
-```
-
-### Performance Comparison
-
-| Validation Type | Time | Network Required | Use Case |
-|----------------|------|------------------|----------|
-| `validate:quick` | ~100ms | No | Development |
-| `validate:local` | ~500ms | No | Pre-submission |
-| `validate` | ~2-5s | Yes | Final check |
+| Step | Command | Time | When to Use |
+|------|---------|------|-------------|
+| **Development** | `npm run validate:quick` | ~100ms | Rapid iteration, structure checks |
+| **Pre-submission** | `npm run validate:local` | ~500ms | Before final submission |
+| **Final check** | `npm run validate` | ~2-5s | Before creating PR |
 
 ### Optimization Tips
 
-- **Development**: Use `validate:quick` for rapid iteration
-- **Testing**: Use `validate:local` for comprehensive local checks
-- **Submission**: Use `validate` only before final PR submission
-- **Debugging**: Use individual `--check` options to isolate issues
+- **Start Fast**: Use `validate:quick` during development
+- **Test Locally**: Use `validate:local` for comprehensive checks without network calls
+- **Final Validation**: Use full `validate` only before PR submission
+- **Debug Issues**: Use individual validation scripts to isolate problems
 
 ---
 
@@ -189,26 +164,10 @@ npm run validate
 
 ### Debugging Strategy
 
-1. **Start with Quick Validation**
-   ```bash
-   npm run validate:quick
-   ```
-
-2. **Add Local Validation**
-   ```bash
-   npm run validate:local
-   ```
-
-3. **Isolate Specific Issues**
-   ```bash
-   npm run validate:signature
-   npm run validate:transaction
-   ```
-
-4. **Full Validation**
-   ```bash
-   npm run validate
-   ```
+1. **Quick Check** → `npm run validate:quick` (structure issues)
+2. **Local Check** → `npm run validate:local` (signature/time issues)
+3. **Isolate Issues** → `npm run validate:signature` or `npm run validate:transaction`
+4. **Final Check** → `npm run validate` (complete validation)
 
 ### Error Categories
 
