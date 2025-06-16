@@ -129,6 +129,19 @@ dao-agenda-metadata-repository/
 
 ---
 
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm test
+
+# Test results
+Test Suites: 3 passed, 3 total
+Tests:       50 passed, 50 total
+```
+
+---
+
 ## 📚 Documentation
 
 | Document | Description |
@@ -141,19 +154,6 @@ dao-agenda-metadata-repository/
 | [PR Guide](docs/pr-guide.md) | Pull request submission guidelines |
 | [Test Guide](docs/test-guide.md) | Testing guide |
 | [FAQ](docs/faq.md) | Frequently asked questions |
-
----
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-npm test
-
-# Test results
-Test Suites: 3 passed, 3 total
-Tests:       50 passed, 50 total
-```
 
 ---
 
