@@ -1,6 +1,9 @@
-import { AgendaValidator } from "../../src/validators/agenda-validator.js";
+import { AgendaValidator } from "../../src/validators/agenda-validator";
+import { getRpcUrl, Network } from "../../src/config/rpc";
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
+import { describe, it, expect } from "@jest/globals";
+import { TIME_CONSTANTS, TEST_CONSTANTS } from "../../src/config/constants";
 dotenv.config();
 
 const abiAgendaCreate = [
@@ -114,7 +117,8 @@ const valid = {
       "id": "1747210034678",
       "type": "Custom"
     }
-  ]
+  ],
+      createdAt: "2024-01-01T00:00:00.00Z"
 };
 
 describe("AgendaValidator", () => {
@@ -184,44 +188,106 @@ describe("AgendaValidator", () => {
   });
 
   describe("getAgendaSignatureMessage", () => {
-    it("should generate correct message", () => {
-      const message = AgendaValidator.getAgendaSignatureMessage(123, "0xabc");
-      expect(message).toBe("I am the one who submitted agenda #123 via transaction 0xabc. This signature proves that I am the one who submitted this agenda.");
+    it("should generate correct message for creation", () => {
+          const timestamp = "2024-01-01T00:00:00.00Z";
+    const message = AgendaValidator.getAgendaSignatureMessage(123, "0xabc", timestamp, false);
+    expect(message).toBe("I am the one who submitted agenda #123 via transaction 0xabc. I am creating this metadata at 2024-01-01T00:00:00.00Z. This signature proves that I am the one who submitted this agenda.");
+    });
+
+    it("should generate correct message for update", () => {
+          const timestamp = "2024-01-01T00:00:00.00Z";
+    const message = AgendaValidator.getAgendaSignatureMessage(123, "0xabc", timestamp, true);
+    expect(message).toBe("I am the one who submitted agenda #123 via transaction 0xabc. I am updating this metadata at 2024-01-01T00:00:00.00Z. This signature proves that I am the one who can update this agenda.");
+    });
+  });
+
+  describe("validateSignatureTimestamp", () => {
+    it("should validate recent timestamp", () => {
+      const recentTimestamp = new Date().toISOString();
+      const result = AgendaValidator.validateSignatureTimestamp(recentTimestamp);
+      expect(result).toBe(true);
+    });
+
+    it("should reject expired timestamp", () => {
+      const expiredTimestamp = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(); // 2시간 전
+      const result = AgendaValidator.validateSignatureTimestamp(expiredTimestamp);
+      expect(result).toBe(false);
+    });
+
+    it("should reject invalid timestamp format", () => {
+      const result = AgendaValidator.validateSignatureTimestamp("invalid-timestamp");
+      expect(result).toBe(false);
     });
   });
 
   describe("validateAgendaSignature", () => {
-    it("should validate correct signature", async () => {
+    it("should validate correct signature with timestamp", async () => {
       const wallet = ethers.Wallet.createRandom();
-      const message = AgendaValidator.getAgendaSignatureMessage(valid.id, valid.transaction);
+      const timestamp = new Date().toISOString();
+      const message = AgendaValidator.getAgendaSignatureMessage(valid.id, valid.transaction, timestamp, false);
       const signature = await wallet.signMessage(message);
-      const result = await AgendaValidator.validateAgendaSignature(valid.id, valid.transaction, signature, wallet.address);
+      const testMetadata = {
+        ...valid,
+        network: "sepolia" as const,
+        creator: { address: wallet.address, signature },
+        createdAt: timestamp
+      };
+      const result = await AgendaValidator.validateAgendaSignature(testMetadata, false);
       expect(result).toBe(true);
     });
 
     it("should reject incorrect signature", async () => {
       const wallet = ethers.Wallet.createRandom();
       const otherWallet = ethers.Wallet.createRandom();
-      const message = AgendaValidator.getAgendaSignatureMessage(valid.id, valid.transaction);
+      const timestamp = new Date().toISOString();
+      const message = AgendaValidator.getAgendaSignatureMessage(valid.id, valid.transaction, timestamp, false);
       const signature = await wallet.signMessage(message);
-      const result = await AgendaValidator.validateAgendaSignature(valid.id, valid.transaction, signature, otherWallet.address);
+      const testMetadata = {
+        ...valid,
+        network: "sepolia" as const,
+        creator: { address: otherWallet.address, signature },
+        createdAt: timestamp
+      };
+      const result = await AgendaValidator.validateAgendaSignature(testMetadata, false);
       expect(result).toBe(false);
     });
 
     it("should reject invalid signature format", async () => {
-      const result = await AgendaValidator.validateAgendaSignature(valid.id, valid.transaction, "0xinvalid", valid.creator.address);
+      const timestamp = new Date().toISOString();
+      const testMetadata = {
+        ...valid,
+        network: "sepolia" as const,
+        creator: { address: valid.creator.address, signature: "0xinvalid" },
+        createdAt: timestamp
+      };
+      const result = await AgendaValidator.validateAgendaSignature(testMetadata, false);
+      expect(result).toBe(false);
+    });
+
+    it("should reject expired signature", async () => {
+      const wallet = ethers.Wallet.createRandom();
+      const expiredTimestamp = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(); // 2시간 전
+      const message = AgendaValidator.getAgendaSignatureMessage(valid.id, valid.transaction, expiredTimestamp, false);
+      const signature = await wallet.signMessage(message);
+      const testMetadata = {
+        ...valid,
+        network: "sepolia" as const,
+        creator: { address: wallet.address, signature },
+        createdAt: expiredTimestamp
+      };
+      const result = await AgendaValidator.validateAgendaSignature(testMetadata, false);
       expect(result).toBe(false);
     });
   });
 
   describe("validateTransactionSender", () => {
     it("should return true if sender matches", () => {
-      const tx = { from: valid.creator.address } as ethers.TransactionResponse;
+      const tx = { from: valid.creator.address, to: "0x123" } as any;
       expect(AgendaValidator.validateTransactionSender(tx, valid.creator.address)).toBe(true);
     });
 
     it("should return false if sender does not match", () => {
-      const tx = { from: "0x" + "b".repeat(40) } as ethers.TransactionResponse;
+      const tx = { from: "0x" + "b".repeat(40), to: "0x123" } as any;
       expect(AgendaValidator.validateTransactionSender(tx, valid.creator.address)).toBe(false);
     });
 
@@ -230,7 +296,7 @@ describe("AgendaValidator", () => {
     });
 
     it("should handle case-insensitive address comparison", () => {
-      const tx = { from: valid.creator.address.toUpperCase() } as ethers.TransactionResponse;
+      const tx = { from: valid.creator.address.toUpperCase(), to: "0x123" } as any;
       expect(AgendaValidator.validateTransactionSender(tx, valid.creator.address.toLowerCase())).toBe(true);
     });
   });
@@ -257,59 +323,139 @@ describe("AgendaValidator", () => {
           status: 1,
           type: 0
         } as unknown as ethers.TransactionReceipt;
-        expect(() => AgendaValidator.validateAgendaIdFromEvent(mockReceipt, valid.id)).toThrow("AgendaCreated event not found in transaction logs");
+        expect(() => AgendaValidator.validateAgendaIdFromEvent(mockReceipt as any, valid.id)).toThrow("AgendaCreated event not found in transaction logs");
       });
 
-      it("should throw when event log format is invalid", () => {
-        const eventSignature = "event AgendaCreated(address indexed from,uint256 indexed id,address[] targets,uint128 noticePeriodSeconds,uint128 votingPeriodSeconds,bool atomicExecute)";
+                  it("should successfully validate AgendaCreated event with correct format", () => {
+        // Use the updated AgendaCreated event signature
+        const eventSignature = "event AgendaCreated(address indexed from, uint256 indexed id, address[] targets, uint128 noticePeriodSeconds, uint128 votingPeriodSeconds, bool atomicExecute)";
         const iface = new ethers.Interface([eventSignature]);
         const event = iface.getEvent("AgendaCreated");
         if (!event) throw new Error("Event not found");
 
-        // 실제 이벤트 로그 형식과 다른 mockReceipt 생성
+        // Create mock receipt with correct AgendaCreated event structure
         const mockReceipt = {
           logs: [{
             topics: [
               event.topicHash,
-              ethers.zeroPadValue(valid.creator.address, 32),
-              ethers.zeroPadValue(ethers.toBeHex(valid.id), 32)
+              ethers.zeroPadValue(valid.creator.address, 32), // from (creator) as indexed parameter
+              ethers.zeroPadValue(ethers.toBeHex(BigInt(valid.id)), 32) // id as indexed parameter
+            ],
+            // Properly encoded data for non-indexed parameters
+            data: ethers.AbiCoder.defaultAbiCoder().encode(
+              ["address[]", "uint128", "uint128", "bool"],
+              [
+                [valid.actions[0].contractAddress],
+                300, // noticePeriodSeconds
+                600, // votingPeriodSeconds
+                false // atomicExecute
+              ]
+            )
+          }]
+        };
+
+        // This should return true for valid event
+        const result = AgendaValidator.validateAgendaIdFromEvent(mockReceipt as any, valid.id);
+        expect(result).toBe(true);
+      });
+
+      it("should throw when AgendaCreated event not found in logs", () => {
+        const mockReceipt = {
+          logs: [{
+            topics: ["0xinvalidtopic"],
+            data: "0xinvaliddata"
+          }]
+        };
+
+        expect(() => AgendaValidator.validateAgendaIdFromEvent(mockReceipt as any, valid.id))
+          .toThrow("AgendaCreated event not found");
+      });
+
+      it("should return false when agenda ID in event doesn't match expected ID", () => {
+        const eventSignature = "event AgendaCreated(address indexed from, uint256 indexed id, address[] targets, uint128 noticePeriodSeconds, uint128 votingPeriodSeconds, bool atomicExecute)";
+        const iface = new ethers.Interface([eventSignature]);
+        const event = iface.getEvent("AgendaCreated");
+        if (!event) throw new Error("Event not found");
+
+        // Create mock receipt with DIFFERENT agenda ID
+        const wrongAgendaId = "999";
+        const mockReceipt = {
+          logs: [{
+            topics: [
+              event.topicHash,
+              ethers.zeroPadValue(valid.creator.address, 32), // from (creator) as indexed parameter
+              ethers.zeroPadValue(ethers.toBeHex(BigInt(wrongAgendaId)), 32) // Wrong id
             ],
             data: ethers.AbiCoder.defaultAbiCoder().encode(
               ["address[]", "uint128", "uint128", "bool"],
-              [[valid.actions[0].contractAddress], 0, 0, false]
+              [
+                [valid.actions[0].contractAddress],
+                300, // noticePeriodSeconds
+                600, // votingPeriodSeconds
+                false // atomicExecute
+              ]
             )
-          }],
-          blockNumber: 0,
-          blockHash: "0x",
-          transactionHash: valid.transaction,
-          transactionIndex: 0,
-          from: valid.creator.address,
-          to: "0x",
-          contractAddress: null,
-          cumulativeGasUsed: 0,
-          gasUsed: 0,
-          effectiveGasPrice: 0,
-          status: 1,
-          type: 0
-        } as unknown as ethers.TransactionReceipt;
+          }]
+        };
 
-        expect(() => AgendaValidator.validateAgendaIdFromEvent(mockReceipt, valid.id)).toThrow("Failed to parse AgendaCreated event log. Error: Do not know how to serialize a BigInt");
+        // This should return false for mismatched agenda ID
+        const result = AgendaValidator.validateAgendaIdFromEvent(mockReceipt as any, valid.id);
+        expect(result).toBe(false);
+      });
+
+      it("should throw when event data is malformed", () => {
+        const eventSignature = "event AgendaCreated(address indexed from, uint256 indexed id, address[] targets, uint128 noticePeriodSeconds, uint128 votingPeriodSeconds, bool atomicExecute)";
+        const iface = new ethers.Interface([eventSignature]);
+        const event = iface.getEvent("AgendaCreated");
+        if (!event) throw new Error("Event not found");
+
+        // Create mock receipt with malformed data
+        const mockReceipt = {
+          logs: [{
+            topics: [
+              event.topicHash,
+              ethers.zeroPadValue(valid.creator.address, 32), // from (creator) as indexed parameter
+              ethers.zeroPadValue(ethers.toBeHex(BigInt(valid.id)), 32) // id as indexed parameter
+            ],
+            data: "0xinvaliddata" // Malformed data that can't be decoded
+          }]
+        };
+
+        expect(() => AgendaValidator.validateAgendaIdFromEvent(mockReceipt as any, valid.id))
+          .toThrow(/Failed to parse AgendaCreated event log/);
+      });
+
+      it("should throw when receipt has no logs", () => {
+        const mockReceipt = {
+          logs: []
+        };
+
+        expect(() => AgendaValidator.validateAgendaIdFromEvent(mockReceipt as any, valid.id))
+          .toThrow("AgendaCreated event not found");
+      });
+
+      it("should throw when receipt is null or undefined", () => {
+        expect(() => AgendaValidator.validateAgendaIdFromEvent(null as any, valid.id))
+          .toThrow();
+
+        expect(() => AgendaValidator.validateAgendaIdFromEvent(undefined as any, valid.id))
+          .toThrow();
       });
     });
 
     describe("integration tests", () => {
-      it("should return true for real event", async () => {
-        const rpcUrl = valid.network === "mainnet" ? process.env.MAINNET_RPC_URL : process.env.SEPOLIA_RPC_URL;
-        if (!rpcUrl) {
-          console.warn(`Skipping test: ${valid.network.toUpperCase()}_RPC_URL not set`);
-          return;
-        }
+                  it("should return true for real event (requires network access)", async () => {
+        // Use real Sepolia agenda data from constants for integration testing
+        const { AGENDA_ID, TRANSACTION_HASH, NETWORK } = TEST_CONSTANTS.SEPOLIA_TEST_DATA;
 
+        const rpcUrl = getRpcUrl(NETWORK);
         const provider = new ethers.JsonRpcProvider(rpcUrl);
-        const receipt = await provider.getTransactionReceipt(valid.transaction);
+        const receipt = await provider.getTransactionReceipt(TRANSACTION_HASH);
         if (!receipt) throw new Error("Transaction receipt not found");
-        expect(AgendaValidator.validateAgendaIdFromEvent(receipt, valid.id)).toBe(true);
-      });
+
+        const result = AgendaValidator.validateAgendaIdFromEvent(receipt as any, AGENDA_ID);
+        expect(result).toBe(true);
+      }, TIME_CONSTANTS.TEST_TIMEOUT);
     });
   });
 });

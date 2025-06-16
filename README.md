@@ -36,6 +36,19 @@ npm test
 
 ---
 
+## 📋 PR Title Format
+
+When submitting pull requests, use the following title format:
+
+- **New Agenda**: `[Agenda] <network> - <id> - <title>`
+- **Update Agenda**: `[Agenda Update] <network> - <id> - <title>`
+
+**Examples:**
+- `[Agenda] sepolia - 123 - Proposal for Treasury Allocation`
+- `[Agenda Update] mainnet - 456 - Updated Governance Parameters`
+
+---
+
 ## 📝 Validation Commands
 
 | Command | Description |
@@ -99,11 +112,7 @@ Tests:       50 passed, 50 total
 2. Create metadata file using templates in `data/agendas/`
 3. Generate signature using web tool
 4. Validate locally: `npm run validate:local`
-5. Submit PR with correct title format
-
-**PR Title Format:**
-- New: `[Agenda] <network> - <id> - <title>`
-- Update: `[Agenda Update] <network> - <id> - <title>`
+5. Submit PR with correct title format (see PR Title Format section above)
 
 ---
 
