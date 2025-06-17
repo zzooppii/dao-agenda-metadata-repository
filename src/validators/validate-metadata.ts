@@ -155,17 +155,7 @@ async function validatePrTitle(metadata: AgendaMetadata, filePath: string, prTit
       return false;
     }
 
-    // Validate metadata consistency with PR title operation
-    const hasUpdatedAt = !!metadata.updatedAt;
-    if (isUpdateFromTitle && !hasUpdatedAt) {
-      console.error(`❌ Update operation requires updatedAt field in metadata`);
-      return false;
-    }
 
-    if (isCreateFromTitle && hasUpdatedAt) {
-      console.error(`❌ Create operation should not have updatedAt field in metadata`);
-      return false;
-    }
 
     return true;
   } catch (error) {
