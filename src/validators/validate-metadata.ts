@@ -122,8 +122,17 @@ async function validateFormat(metadata: AgendaMetadata, filePath: string): Promi
 
 async function validatePrTitle(metadata: AgendaMetadata, filePath: string, prTitle: string): Promise<boolean> {
   try {
-    const isUpdate = !!metadata.updatedAt;
-    const expectedPrefix = isUpdate ? "[Agenda Update]" : "[Agenda]";
+    // Determine operation type from PR title, not from metadata
+    const isUpdateFromTitle = prTitle.startsWith("[Agenda Update]");
+    const isCreateFromTitle = prTitle.startsWith("[Agenda]") && !isUpdateFromTitle;
+
+    if (!isUpdateFromTitle && !isCreateFromTitle) {
+      console.error(`❌ PR title must start with "[Agenda]" or "[Agenda Update]"`);
+      console.error(`   Actual: "${prTitle}"`);
+      return false;
+    }
+
+    const expectedPrefix = isUpdateFromTitle ? "[Agenda Update]" : "[Agenda]";
     const expectedPattern = `${expectedPrefix} ${metadata.network} - ${metadata.id} - `;
 
     if (!prTitle.startsWith(expectedPattern)) {
@@ -133,19 +142,28 @@ async function validatePrTitle(metadata: AgendaMetadata, filePath: string, prTit
       return false;
     }
 
-    // Check file existence based on operation type
-    // For updates: check both local and GitHub
-    // For creates: only check GitHub (local file is expected during development)
+    // Check file existence based on PR title operation type
     const fileExistsOnGitHub = await checkFileExistsOnGitHub(filePath);
-    const fileExistsLocally = checkFileExistsLocally(filePath);
 
-    if (isUpdate && !fileExistsOnGitHub) {
+    if (isUpdateFromTitle && !fileExistsOnGitHub) {
       console.error(`❌ Update operation requires existing file on GitHub main branch, but ${filePath} does not exist`);
       return false;
     }
 
-    if (!isUpdate && fileExistsOnGitHub) {
+    if (isCreateFromTitle && fileExistsOnGitHub) {
       console.error(`❌ Create operation requires new file, but ${filePath} already exists on GitHub main branch`);
+      return false;
+    }
+
+    // Validate metadata consistency with PR title operation
+    const hasUpdatedAt = !!metadata.updatedAt;
+    if (isUpdateFromTitle && !hasUpdatedAt) {
+      console.error(`❌ Update operation requires updatedAt field in metadata`);
+      return false;
+    }
+
+    if (isCreateFromTitle && hasUpdatedAt) {
+      console.error(`❌ Create operation should not have updatedAt field in metadata`);
       return false;
     }
 
