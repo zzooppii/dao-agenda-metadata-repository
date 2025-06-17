@@ -45,7 +45,10 @@ npm install
 
 #### 1.3 Verify Installation
 ```bash
-# Check if validation works
+# Check if dependencies are installed
+npm list
+
+# Verify the validation tool works
 npm run validate -- --help
 ```
 
