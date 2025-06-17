@@ -134,15 +134,18 @@ async function validatePrTitle(metadata: AgendaMetadata, filePath: string, prTit
     }
 
     // Check file existence based on operation type
-    const fileExists = await checkFileExists(filePath);
+    // For updates: check both local and GitHub
+    // For creates: only check GitHub (local file is expected during development)
+    const fileExistsOnGitHub = await checkFileExistsOnGitHub(filePath);
+    const fileExistsLocally = checkFileExistsLocally(filePath);
 
-    if (isUpdate && !fileExists) {
-      console.error(`❌ Update operation requires existing file, but ${filePath} does not exist`);
+    if (isUpdate && !fileExistsOnGitHub) {
+      console.error(`❌ Update operation requires existing file on GitHub main branch, but ${filePath} does not exist`);
       return false;
     }
 
-    if (!isUpdate && fileExists) {
-      console.error(`❌ Create operation requires new file, but ${filePath} already exists`);
+    if (!isUpdate && fileExistsOnGitHub) {
+      console.error(`❌ Create operation requires new file, but ${filePath} already exists on GitHub main branch`);
       return false;
     }
 
