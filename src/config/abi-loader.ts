@@ -2,6 +2,9 @@ import { ethers } from 'ethers';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// 현재 디렉토리 설정 (Jest와 ES 모듈 호환)
+const currentDir = path.resolve(process.cwd(), 'src/config');
+
 /**
  * ABI Loader utility for managing contract ABIs
  */
@@ -17,7 +20,7 @@ export class ABILoader {
     }
 
     try {
-      const abiPath = path.join(__dirname, 'abi', `${contractName}.json`);
+      const abiPath = path.join(currentDir, 'abi', `${contractName}.json`);
       const abiContent = fs.readFileSync(abiPath, 'utf8');
       const abi = JSON.parse(abiContent);
 

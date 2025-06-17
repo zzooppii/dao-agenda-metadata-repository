@@ -63,10 +63,33 @@ jobs:
 
       - name: Auto-merge PR
         if: steps.changed-files.outputs.any_changed == 'true'
-        uses: pascalgn/merge-action@v0.15.6
+        uses: actions/github-script@v7
+        continue-on-error: true
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          merge_method: squash
-          merge_commit_message: ${{ github.event.pull_request.title }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log("🚀 All validations passed! Auto-merging PR...");
+
+            try {
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                commit_title: "Auto-merge: " + context.payload.pull_request.title,
+                commit_message: "✅ All validations passed\n\n" +
+                               "- Schema validation: ✅\n" +
+                               "- Format validation: ✅\n" +
+                               "- PR title validation: ✅\n" +
+                               "- Time validation: ✅\n" +
+                               "- Signature validation: ✅\n" +
+                               "- Transaction validation: ✅\n\n" +
+                               "Automatically merged by GitHub Actions after successful validation.",
+                merge_method: "squash"
+              });
+
+              console.log("✅ PR successfully merged!");
+            } catch (error) {
+              console.log("⚠️ Auto-merge not available - this may require manual merge or additional repository permissions.");
+              console.log("Error details:", error.message);
+              console.log("All validations passed - the PR is ready for manual merge.");
+            }

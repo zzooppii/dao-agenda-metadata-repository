@@ -205,7 +205,12 @@ async function validateTransaction(metadata: AgendaMetadata): Promise<boolean> {
     }
 
     // Validate transaction sender
-    if (!AgendaValidator.validateTransactionSender(tx, metadata.creator.address)) {
+    if (!tx.from) {
+      console.error("❌ Transaction has no sender address");
+      return false;
+    }
+
+    if (!AgendaValidator.validateTransactionSender(tx as any, metadata.creator.address)) {
       return false;
     }
 
