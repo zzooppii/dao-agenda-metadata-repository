@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>DAO Agenda Signature</title>
     <style>
         body {
@@ -98,10 +101,10 @@
             font-size: 12px;
         }
     </style>
+
 </head>
 <body>
-    <script src="signature-messages.js"></script>
-    <h1>DAO Agenda Signature</h1>
+    <h1>DAO Agenda Signature 1</h1>
         <div class="container">
         <div class="wallet-info">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -237,7 +240,7 @@
 
         // 메시지 미리보기 업데이트
         function updateMessagePreview() {
-            const agendaId = document.getElementById('agendaId').value;
+                        const agendaId = document.getElementById('agendaId').value;
             const transactionHash = document.getElementById('transactionHash').value;
             const timestamp = document.getElementById('timestamp').value;
             const operationType = document.getElementById('operationType').value;
@@ -247,9 +250,9 @@
                 let message;
 
                 if (operationType === 'update') {
-                    message = window.SignatureMessages.update(agendaId, transactionHash, timestampISO);
+                    message = `I am the one who submitted agenda #${agendaId} via transaction ${transactionHash}. I am updating this metadata at ${timestampISO}. This signature proves that I am the one who can update this agenda.`;
                 } else {
-                    message = window.SignatureMessages.create(agendaId, transactionHash, timestampISO);
+                    message = `I am the one who submitted agenda #${agendaId} via transaction ${transactionHash}. I am creating this metadata at ${timestampISO}. This signature proves that I am the one who submitted this agenda.`;
                 }
 
                 document.getElementById('messageText').textContent = message;
@@ -298,10 +301,14 @@
         }
 
         async function signMessage() {
+                        console.log('signMessage function called');
+
             const agendaId = document.getElementById('agendaId').value;
             const transactionHash = document.getElementById('transactionHash').value;
             const timestamp = document.getElementById('timestamp').value;
             const operationType = document.getElementById('operationType').value;
+
+            console.log('Input validation:', { agendaId, transactionHash, timestamp, operationType });
 
             if (!agendaId || !transactionHash || !timestamp) {
                 alert('Please fill in all fields');
@@ -329,21 +336,24 @@
                 return;
             }
 
-            const timestampISO = formatToCentiseconds(signatureTime);
+                        const timestampISO = formatToCentiseconds(signatureTime);
             let message;
 
             if (operationType === 'update') {
-                message = window.SignatureMessages.update(agendaId, transactionHash, timestampISO);
+                message = `I am the one who submitted agenda #${agendaId} via transaction ${transactionHash}. I am updating this metadata at ${timestampISO}. This signature proves that I am the one who can update this agenda.`;
             } else {
-                message = window.SignatureMessages.create(agendaId, transactionHash, timestampISO);
+                message = `I am the one who submitted agenda #${agendaId} via transaction ${transactionHash}. I am creating this metadata at ${timestampISO}. This signature proves that I am the one who submitted this agenda.`;
             }
 
             try {
+                                console.log('Requesting signature...', { message, currentAccount });
+
                 const signature = await window.ethereum.request({
                     method: 'personal_sign',
                     params: [message, currentAccount]
                 });
 
+                console.log('Signature successful:', signature);
                 const signatureResult = document.getElementById('signatureResult');
                 signatureResult.style.display = 'block';
                                 const timeField = operationType === 'update' ? 'updatedAt' : 'createdAt';
@@ -416,6 +426,8 @@
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, SignatureMessages already available');
+
             setCurrentTime();
             updateOperationInfo();
 
@@ -469,7 +481,15 @@
         }
 
         document.getElementById('connectButton').addEventListener('click', connectWallet);
-        document.getElementById('signButton').addEventListener('click', signMessage);
+
+        const signButton = document.getElementById('signButton');
+        if (signButton) {
+            console.log('Attaching event listener to sign button...');
+            signButton.addEventListener('click', signMessage);
+            console.log('Sign button event listener attached successfully');
+        } else {
+            console.error('Sign button not found!');
+        }
     </script>
 </body>
 </html>
