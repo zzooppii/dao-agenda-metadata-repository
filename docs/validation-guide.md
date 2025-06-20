@@ -18,25 +18,25 @@ The validation system ensures metadata accuracy and security through multiple ve
 
 ```mermaid
 graph TD
-    A[Parse PR Title] --> B[File Existence Check]
-    B --> C[Schema Validation]
-    C --> D[Format Validation]
-    D --> E[PR Title Validation]
-    E --> F[Time Validation]
-    F --> G[Signature Validation]
-    G --> H[Transaction Validation]
-    H --> I[Validation Complete]
+    A[Parse PR Title] --> B[Schema Validation]
+    B --> C[Format Validation]
+    C --> D[PR Title Validation<br/>- Extract operation type<br/>- Check file existence<br/>- Validate consistency]
+    D --> E[Time Validation]
+    E --> F[Signature Validation]
+    F --> G[Transaction Validation]
+    G --> H[Validation Complete]
 
-    style C fill:#e8f5e8
-    style G fill:#fff3cd
-    style H fill:#f8d7da
+    style B fill:#e8f5e8
+    style D fill:#e1f5fe
+    style F fill:#fff3cd
+    style G fill:#f8d7da
 ```
 
 ### Validation Flow
-1. **Parse PR Title**: Extract network, ID, and operation type
-2. **File Existence**: Verify file exists/doesn't exist based on operation
-3. **Execute Steps**: Run selected validation steps sequentially
-4. **Stop on Failure**: Immediate termination on any validation failure
+1. **Parse PR Title**: Extract network, ID, and operation type from PR title format
+2. **Execute Validation Steps**: Run selected validation steps sequentially:
+   - Schema, Format, PR Title (includes file existence check), Time, Signature, Transaction
+3. **Stop on Failure**: Immediate termination on any validation failure
 
 ---
 
@@ -50,7 +50,7 @@ Execute specific validation steps for faster debugging and development.
 |------|-------------|-------------|----------|
 | `schema` | JSON schema validation | Fast ⚡ | Structure check |
 | `format` | File format and path validation | Fast ⚡ | Basic format |
-| `pr-title` | PR title consistency validation | Fast ⚡ | Title matching |
+| `pr-title` | PR title consistency & file operation validation | Fast ⚡ | Title matching, file existence |
 | `time` | Time validation (1-hour rule) | Fast ⚡ | Signature expiry |
 | `signature` | Signature verification | Medium 🔄 | Cryptographic proof |
 | `transaction` | On-chain transaction validation | Slow 🐌 | Blockchain data |
@@ -77,6 +77,8 @@ npm run validate:transaction -- --pr-title "[Agenda] sepolia - 64 - Test" data/a
 
 ## 📝 Validation Steps
 
+The validation system performs the following steps in sequence:
+
 ### 1. Schema Validation
 - **Purpose**: Verify JSON structure and required fields
 - **Checks**: Field types, required properties, format constraints
@@ -90,10 +92,16 @@ npm run validate:transaction -- --pr-title "[Agenda] sepolia - 64 - Test" data/a
 - **Dependencies**: None
 
 ### 3. PR Title Validation
-- **Purpose**: Ensure PR title matches metadata content
-- **Checks**: Title format, network/ID consistency, operation type
+- **Purpose**: Ensure PR title matches metadata content and validate file operations
+- **Checks**:
+  - Title format (`[Agenda]` or `[Agenda Update]`)
+  - Network/ID consistency with metadata
+  - Operation type detection (create vs update)
+  - File existence verification (GitHub main branch)
+  - **Create operation**: File must NOT exist on main branch
+  - **Update operation**: File must exist on main branch
 - **Speed**: Fast ⚡
-- **Dependencies**: None
+- **Dependencies**: GitHub API (for file existence check)
 
 ### 4. Time Validation
 - **Purpose**: Verify signature timing constraints
