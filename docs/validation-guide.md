@@ -7,7 +7,7 @@
 1. [Validation Overview](#validation-overview)
 2. [Granular Validation](#granular-validation)
 3. [Validation Steps](#validation-steps)
-4. [Performance Guide](#performance-guide)
+4. [Validation Strategy Guide](#validation-strategy-guide)
 5. [Error Resolution](#error-resolution)
 
 ---
@@ -123,21 +123,21 @@ The validation system performs the following steps in sequence:
 
 ---
 
-## ⚡ Performance Guide
+## ⚡ Validation Strategy Guide
 
 ### Recommended Workflow
 
-| Step | Command | Time | When to Use |
-|------|---------|------|-------------|
-| **Development** | `npm run validate:quick` | ~100ms | Rapid iteration, structure checks |
-| **Pre-submission** | `npm run validate:local` | ~500ms | Before final submission |
-| **Final check** | `npm run validate` | ~2-5s | Before creating PR |
+| Step | Command | When to Use |
+|------|---------|-------------|
+| **Development** | `npm run validate:quick` | Rapid iteration, structure checks |
+| **Pre-submission** | `npm run validate:local` | Before final submission |
+| **Final check** | `npm run validate` | Before creating PR |
 
 ### Optimization Tips
 
-- **Start Fast**: Use `validate:quick` during development
+- **Start Fast**: Use `validate:quick` during development (fastest - schema + format only)
 - **Test Locally**: Use `validate:local` for comprehensive checks without network calls
-- **Final Validation**: Use full `validate` only before PR submission
+- **Final Validation**: Use full `validate` only before PR submission (includes on-chain verification)
 - **Debug Issues**: Use individual validation scripts to isolate problems
 
 ---
