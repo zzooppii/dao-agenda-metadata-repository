@@ -15,33 +15,89 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
     steps:
-      - name: Get PR number
+            - name: Get PR number
         id: pr
         uses: actions/github-script@v7
         with:
           script: |
+            console.log('=== Workflow Run Event Debug ===');
+            console.log('Event name:', context.eventName);
+            console.log('Action:', context.payload.action);
+            console.log('Workflow run ID:', context.payload.workflow_run?.id);
+            console.log('Head branch:', context.payload.workflow_run?.head_branch);
+            console.log('Head SHA:', context.payload.workflow_run?.head_sha);
+            console.log('Repository:', context.payload.workflow_run?.head_repository?.full_name);
+
+            // workflow_run에서 PR 정보 직접 가져오기
+            const workflowRun = context.payload.workflow_run;
+
+            if (!workflowRun) {
+              console.log('❌ No workflow_run data available');
+              return null;
+            }
+
+            // PR 리스트 가져오기
             const { data: pulls } = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head: `${context.repo.owner}:${context.payload.workflow_run.head_branch}`,
               state: 'open'
             });
 
-            if (pulls.length === 0) {
-              console.log('No open PR found for this branch');
+            console.log(`📋 Found ${pulls.length} open PRs`);
+
+            // 모든 PR 정보 로깅
+            for (const pr of pulls) {
+              console.log(`PR #${pr.number}: "${pr.title}"`);
+              console.log(`  - Head ref: ${pr.head.ref}`);
+              console.log(`  - Head SHA: ${pr.head.sha}`);
+              console.log(`  - Base ref: ${pr.base.ref}`);
+            }
+
+            // 여러 조건으로 PR 찾기
+            let matchingPr = null;
+
+            // 1. SHA로 먼저 찾기
+            matchingPr = pulls.find(pr => pr.head.sha === workflowRun.head_sha);
+            if (matchingPr) {
+              console.log(`✅ Found PR by SHA: #${matchingPr.number}`);
+            }
+
+            // 2. 브랜치명으로 찾기
+            if (!matchingPr) {
+              matchingPr = pulls.find(pr => pr.head.ref === workflowRun.head_branch);
+              if (matchingPr) {
+                console.log(`✅ Found PR by branch: #${matchingPr.number}`);
+              }
+            }
+
+            // 3. 부분 브랜치명 매칭 (agenda-XXX 패턴)
+            if (!matchingPr && workflowRun.head_branch) {
+              matchingPr = pulls.find(pr =>
+                pr.head.ref.includes(workflowRun.head_branch) ||
+                workflowRun.head_branch.includes(pr.head.ref)
+              );
+              if (matchingPr) {
+                console.log(`✅ Found PR by partial branch match: #${matchingPr.number}`);
+              }
+            }
+
+            if (!matchingPr) {
+              console.log('❌ No matching PR found');
+              console.log('Available PRs:', pulls.map(pr => `#${pr.number} (${pr.head.ref})`));
               return null;
             }
 
-            const pr = pulls[0];
-            console.log(`Found PR #${pr.number}: ${pr.title}`);
+            console.log(`🎯 Final match: PR #${matchingPr.number}: "${matchingPr.title}"`);
 
             // Agenda PR인지 확인
-            if (!pr.title.match(/^\[Agenda( Update)?\] (mainnet|sepolia) - [0-9]+ - .+/)) {
-              console.log('PR title does not match agenda format, skipping auto-merge');
+            if (!matchingPr.title.match(/^\[Agenda( Update)?\] (mainnet|sepolia) - [0-9]+ - .+/)) {
+              console.log('⚠️ PR title does not match agenda format, skipping auto-merge');
+              console.log('Expected format: [Agenda] <network> - <id> - <title>');
               return null;
             }
 
-            return pr.number;
+            console.log('✅ PR title matches agenda format');
+            return matchingPr.number;
 
       - name: Auto-merge PR
         if: steps.pr.outputs.result != 'null'
