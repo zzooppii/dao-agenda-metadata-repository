@@ -21,6 +21,12 @@ on:
         required: true
         type: string
 
+# 자동 머지를 위한 권한 추가
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -61,35 +67,8 @@ jobs:
           NODE_ENV: production
           PR_TITLE: ${{ github.event.pull_request.title }}
 
-      - name: Auto-merge PR
+      - name: Mark validation complete
         if: steps.changed-files.outputs.any_changed == 'true'
-        uses: actions/github-script@v7
-        continue-on-error: true
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            console.log("🚀 All validations passed! Auto-merging PR...");
-
-            try {
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.issue.number,
-                commit_title: "Auto-merge: " + context.payload.pull_request.title,
-                commit_message: "✅ All validations passed\n\n" +
-                               "- Schema validation: ✅\n" +
-                               "- Format validation: ✅\n" +
-                               "- PR title validation: ✅\n" +
-                               "- Time validation: ✅\n" +
-                               "- Signature validation: ✅\n" +
-                               "- Transaction validation: ✅\n\n" +
-                               "Automatically merged by GitHub Actions after successful validation.",
-                merge_method: "squash"
-              });
-
-              console.log("✅ PR successfully merged!");
-            } catch (error) {
-              console.log("⚠️ Auto-merge not available - this may require manual merge or additional repository permissions.");
-              console.log("Error details:", error.message);
-              console.log("All validations passed - the PR is ready for manual merge.");
-            }
+        run: |
+          echo "✅ All validations passed!"
+          echo "🚀 Auto-merge will be handled by separate workflow"

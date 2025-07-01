@@ -1,0 +1,102 @@
+name: PR Auto-merge with Token (Alternative)
+
+on:
+  workflow_run:
+    workflows: ["PR Metadata Validation"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Get PR number
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${context.payload.workflow_run.head_branch}`,
+              state: 'open'
+            });
+
+            if (pulls.length === 0) {
+              console.log('No open PR found for this branch');
+              return;
+            }
+
+            const pr = pulls[0];
+            console.log(`Found PR #${pr.number}: ${pr.title}`);
+
+            // PR 제목이 agenda 형식인지 확인
+            if (!pr.title.match(/^\[Agenda( Update)?\] (mainnet|sepolia) - [0-9]+ - .+/)) {
+              console.log('PR title does not match agenda format, skipping auto-merge');
+              return;
+            }
+
+            return pr.number;
+
+      - name: Auto-merge PR
+        if: steps.pr.outputs.result
+        uses: actions/github-script@v7
+        with:
+          # Personal Access Token 사용 (선택사항)
+          # github-token: ${{ secrets.PAT_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ steps.pr.outputs.result }};
+
+            console.log(`🚀 Attempting to auto-merge PR #${prNumber}...`);
+
+            try {
+              // PR 정보 가져오기
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
+
+              // 자동 머지 시도
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                commit_title: "Auto-merge: " + pr.title,
+                commit_message: "✅ All validations passed - Auto-merged by workflow\n\n" +
+                               "This PR was automatically merged after successful validation.",
+                merge_method: "squash"
+              });
+
+              console.log("✅ PR successfully auto-merged!");
+
+              // 성공 댓글 추가
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: "🎉 **Auto-merge successful!**\n\n" +
+                      "This PR has been automatically merged after passing all validations.\n\n" +
+                      "Thank you for your contribution! 🚀"
+              });
+
+            } catch (error) {
+              console.log("⚠️ Auto-merge failed:", error.message);
+
+              // 실패 댓글 추가
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: "⚠️ **Auto-merge failed**\n\n" +
+                      `**Reason**: ${error.message}\n\n` +
+                      "✅ All validations passed - The PR is ready for manual merge!"
+              });
+            }
