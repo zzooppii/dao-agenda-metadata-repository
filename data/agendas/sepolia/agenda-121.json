@@ -1,0 +1,45 @@
+{
+  "id": 121,
+  "title": "Title",
+  "description": "https://github.com/tokamak-network/ton-staking-v2/issues/310",
+  "network": "sepolia",
+  "transaction": "0x5568fec61db30c634ec4757156e3e4a4180b34cd31dc6492cd93c96778b9d524",
+  "creator": {
+    "address": "0xc1eba383D94c6021160042491A5dfaF1d82694E6",
+    "signature": "0x6751cbd907adc3a31fc5e7d1130b1db5725351a6cf4203e2bce23e2c18836d616cd6b895cc68ff410caf81cec3eb455df73c8bb38b5d329ffb373ba7730004ab1c"
+  },
+  "createdAt": "2025-07-01T05:36:00.00Z",
+  "snapshotUrl": "https://testnet.snapshot.box/#/s-tn:tokamak.eth/",
+  "actions": [
+    {
+      "title": "updateSeigniorageLayer(address)",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorageLayer(address)",
+      "calldata": "0x1e1f0b60000000000000000000000000f078ae62ea4740e19ddf6c0c5e17ecdb820bbee1",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            }
+          ],
+          "name": "updateSeigniorageLayer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false,
+      "id": "1751340148540",
+      "type": "Custom"
+    }
+  ]
+}
