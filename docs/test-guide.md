@@ -66,10 +66,12 @@ npm test -- --watch
 
 ## ⚡ Performance
 
-- **Full Test Suite**: ~3-4 seconds
-- **Schema Tests**: ~100ms (fastest)
-- **Signature Tests**: ~500ms (medium)
-- **Integration Tests**: ~2-5s (depends on network)
+> *Times measured on macOS with Node.js 20. Actual performance may vary by system.*
+
+- **Full Test Suite**: ~2-3 seconds
+- **Schema Tests**: 1-5ms (fastest)
+- **Signature Tests**: 10-60ms (medium)
+- **Integration Tests**: ~400ms (depends on network)
 
 ---
 
@@ -101,9 +103,9 @@ npm test -- --verbose
 
 | Component | Tests | Coverage |
 |-----------|-------|----------|
-| Schema Validation | 11 tests | ✅ Complete |
-| Signature System | 15 tests | ✅ Complete |
-| Transaction Validation | 14 tests | ✅ Complete |
+| Schema Validation | 18 tests | ✅ Complete |
+| Signature System | 9 tests | ✅ Complete |
+| Transaction Validation | 13 tests | ✅ Complete |
 | Utility Functions | 10 tests | ✅ Complete |
 | **Total** | **50 tests** | **✅ 100%** |
 
