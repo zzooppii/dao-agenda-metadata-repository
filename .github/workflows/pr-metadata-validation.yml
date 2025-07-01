@@ -89,22 +89,12 @@ jobs:
 
               console.log("✅ PR successfully auto-merged!");
 
-              // 성공 댓글
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: `🎉 **Auto-merge successful!**\n\nThis PR has been automatically merged after all validations passed.\n\n✅ All checks completed successfully\n\nThank you for your contribution! 🚀`
-              });
-
             } catch (error) {
               console.log(`❌ Auto-merge failed: ${error.message}`);
 
-              // 실패 댓글
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: `⚠️ **Auto-merge failed**\n\n**Reason**: ${error.message}\n\n✅ **All validations passed** - The PR is ready for manual merge!\n\nPlease merge manually when ready.`
-              });
+              // Fork PR에서 권한 문제가 발생할 수 있음을 알림
+              if (error.message.includes('Resource not accessible')) {
+                console.log("🔒 This appears to be a fork PR with limited permissions");
+                console.log("✅ All validations passed - The PR is ready for manual merge!");
+              }
             }
