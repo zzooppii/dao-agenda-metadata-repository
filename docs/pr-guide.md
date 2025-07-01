@@ -88,6 +88,10 @@ git push origin feature/agenda-123
 - Check validation results in PR checks
 - Fix any issues and push updates if needed
 
+### 6. Await Merge
+- **Direct Contributors**: PR auto-merges when validation passes
+- **Fork Contributors**: Await manual review and merge by maintainers (typically within 24-48 hours)
+
 ---
 
 ## 📝 PR Template
@@ -121,8 +125,15 @@ When creating a PR, you'll see this template with essential checks:
 
 ### Validation Results
 
-✅ **Success**: All checks pass → PR ready for review
+#### For Direct Contributors (with repository access):
+✅ **Success**: All checks pass → **Auto-merged immediately**
 ❌ **Failure**: Check failed items → Fix and push again
+
+#### For Fork Contributors:
+✅ **Success**: All checks pass → **Manual review required**
+❌ **Failure**: Check failed items → Fix and push again
+
+**Note**: Fork PRs require manual merge due to GitHub security policies, even after all validations pass successfully.
 
 **Implementation**: [`.github/workflows/pr-metadata-validation.yml`](../.github/workflows/pr-metadata-validation.yml)
 

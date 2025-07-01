@@ -165,6 +165,25 @@ Tests:       50 passed, 50 total
 4. Validate locally: `npm run validate:local`
 5. Submit PR with correct title format (see PR Title Format section above)
 
+### 📋 **PR Process**
+
+**For Fork Contributors:**
+- ✅ **Automatic Validation**: All PRs are automatically validated by GitHub Actions
+- ⏳ **Manual Merge Required**: Due to GitHub security policies, fork PRs require manual approval and merge by maintainers
+- 🔍 **Review Process**: Maintainers will review your PR after validation passes
+- ⚡ **Typical Timeline**: PRs are usually reviewed within 24-48 hours
+
+**For Direct Contributors** (with repository access):
+- ✅ **Automatic Validation**: Same validation process
+- 🚀 **Auto-Merge**: PRs are automatically merged when all validations pass
+
+### 🔒 **Security Notice**
+
+Fork PRs have limited permissions for security reasons:
+- ❌ Cannot auto-merge (GitHub security policy)
+- ✅ Can run validation workflows
+- 🛡️ Maintainer review ensures security and quality
+
 ---
 
 ## 📄 License
