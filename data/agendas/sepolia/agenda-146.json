@@ -1,0 +1,72 @@
+{
+  "id": 146,
+  "title": "Demo 0715",
+  "description": "https://github.com/tokamak-network/ton-staking-v2/issues/310",
+  "network": "sepolia",
+  "transaction": "0x18029f06cadef3af078e106e1f7a15403663664feeb68c0c2c9692009472b88d",
+  "creator": {
+    "address": "0xc1eba383D94c6021160042491A5dfaF1d82694E6",
+    "signature": "0x7e6e95480db0a0a7032858971b52575142f775e1640758fde26273c345b262e1340d316672446c27e0c305429f25c66f07ec8fc61b9e0bd84e86c4bed80e98651c"
+  },
+  "actions": [
+    {
+      "title": "Poseidon - updateSeigniorageLayer(address)",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorageLayer(address)",
+      "calldata": "0x1e1f0b60000000000000000000000000f078ae62ea4740e19ddf6c0c5e17ecdb820bbee1",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            }
+          ],
+          "name": "updateSeigniorageLayer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false
+    },
+    {
+      "title": "Harvey83 - updateSeigniorageLayer(address)",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorageLayer(address)",
+      "calldata": "0x1e1f0b6000000000000000000000000072b45f14326e22a5b0a883cf0021c1860b9ccef9",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "layer2",
+              "type": "address"
+            }
+          ],
+          "name": "updateSeigniorageLayer",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false
+    }
+  ],
+  "createdAt": "2025-07-15T10:04:32.00Z",
+  "snapshotUrl": "https://testnet.snapshot.box/#/s-tn:tokamak.eth/",
+  "discourseUrl": ""
+}
