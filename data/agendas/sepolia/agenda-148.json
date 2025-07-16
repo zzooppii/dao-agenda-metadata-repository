@@ -1,0 +1,38 @@
+{
+  "id": 148,
+  "title": "setMinimumNoticePeriodSeconds to 150",
+  "description": "https://github.com/tokamak-network/ton-staking-v2/issues/310",
+  "network": "sepolia",
+  "transaction": "0xa193bc1b01761413ba187030b8eff2126a12cde3c544ec55a20c0873aa075a48",
+  "creator": {
+    "address": "0xc1eba383D94c6021160042491A5dfaF1d82694E6",
+    "signature": "0x70645dc46f61afeb1c87e3fcd7352ed3355ed98cf194dac22e54294c8cc7a9dd08fa35c160b8c5e4dde9eff3d4bea1220091d541fe46ec94f992c450ba7e79c51b"
+  },
+  "actions": [
+    {
+      "title": "setMinimumNoticePeriodSeconds(uint256)",
+      "contractAddress": "0x1444f7a8bC26a3c9001a13271D56d6fF36B44f08",
+      "method": "setMinimumNoticePeriodSeconds(uint256)",
+      "calldata": "0x23d09fdf0000000000000000000000000000000000000000000000000000000000000096",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_minimumNoticePeriodSeconds",
+              "type": "uint256"
+            }
+          ],
+          "name": "setMinimumNoticePeriodSeconds",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false
+    }
+  ],
+  "createdAt": "2025-07-16T01:03:49.00Z",
+  "snapshotUrl": "https://testnet.snapshot.box/#/s-tn:tokamak.eth/",
+  "discourseUrl": ""
+}
