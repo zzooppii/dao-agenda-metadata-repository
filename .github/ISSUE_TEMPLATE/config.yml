@@ -1,11 +1,17 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 📚 Documentation & Guides
-    url: https://github.com/tokamak-network/dao-agenda-metadata-repository/tree/main/docs
-    about: Metadata registration, validation, and signature creation guides
+  - name: 🚀 Getting Started
+    url: https://github.com/tokamak-network/dao-agenda-metadata-repository/blob/main/docs/getting-started.md
+    about: Quick start guide for metadata registration and validation
+  - name: 🧪 Test Guide
+    url: https://github.com/tokamak-network/dao-agenda-metadata-repository/blob/main/docs/test-guide.md
+    about: Testing and validation procedures for developers
   - name: 📖 README
     url: https://github.com/tokamak-network/dao-agenda-metadata-repository/blob/main/README.md
     about: Project overview and getting started information
+  - name: 📚 Documentation & Guides
+    url: https://github.com/tokamak-network/dao-agenda-metadata-repository/tree/main/docs
+    about: Complete documentation, guides, and technical references
   - name: 🌐 Tokamak Network Official Site
     url: https://tokamak.network
     about: Official Tokamak Network information
