@@ -1,7 +1,7 @@
 name: 🐛 Bug Report
 description: Report a bug or issue
 title: "[Bug] "
-labels: [bug]
+labels: [bug, "needs-review"]
 assignees:
   - Zena-park
 body:
@@ -11,10 +11,6 @@ body:
         👋 **Thank you for reporting a bug!**
 
         Please provide detailed information below to help us resolve the issue quickly.
-
-        📋 **Related Documentation:**
-        - [Getting Started](https://github.com/tokamak-network/dao-agenda-metadata-repository/blob/main/docs/getting-started.md)
-        - [Test Guide](https://github.com/tokamak-network/dao-agenda-metadata-repository/blob/main/docs/test-guide.md)
 
   - type: dropdown
     id: bug-type
