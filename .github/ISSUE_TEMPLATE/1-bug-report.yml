@@ -1,0 +1,127 @@
+name: 🐛 Bug Report
+description: Report a bug or issue
+title: "[Bug] "
+labels: [bug]
+assignees:
+  - Zena-park
+body:
+  - type: markdown
+    attributes:
+      value: |
+        👋 **Thank you for reporting a bug!**
+
+        Please provide detailed information below to help us resolve the issue quickly.
+
+        📋 **Related Documentation:**
+        - [Getting Started](https://github.com/tokamak-network/dao-agenda-metadata-repository/blob/main/docs/getting-started.md)
+        - [Test Guide](https://github.com/tokamak-network/dao-agenda-metadata-repository/blob/main/docs/test-guide.md)
+
+  - type: dropdown
+    id: bug-type
+    attributes:
+      label: 🔍 Bug Type
+      description: What kind of issue is this?
+      options:
+        - Metadata Registration Failure
+        - Validation Failure (Schema/Transaction/Signature)
+        - PR Auto-merge Failure
+        - Website/UI Issue
+        - Documentation Error
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: network
+    attributes:
+      label: 🌐 Network
+      description: Which network did the issue occur on?
+      options:
+        - Mainnet
+        - Sepolia
+        - Not applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Issue Description
+      description: What happened? Please describe both expected and actual behavior.
+      placeholder: |
+        Example:
+        - Uploaded metadata file but validation failed
+        - Expected: Validation success and auto-merge
+        - Actual: "Invalid signature" error occurred
+      value: |
+        **Issue Description:**
+
+        **Expected Behavior:**
+
+        **Actual Behavior:**
+
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔄 Steps to Reproduce
+      description: Please provide steps to reproduce the issue
+      placeholder: |
+        1. Create metadata file
+        2. Create PR
+        3. Run validation
+        4. Error occurs
+      value: |
+        1.
+        2.
+        3.
+        4.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🖥️ Environment Information
+      description: Please provide information about your environment
+      placeholder: |
+        - OS: macOS 13.0
+        - Browser: Chrome 120.0
+        - Node.js: 18.0
+        - Other relevant info
+      value: |
+        - OS:
+        - Browser:
+        - Node.js:
+        - Other:
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📋 Logs and Error Messages
+      description: Please attach relevant logs, error messages, and screenshots
+      render: shell
+      placeholder: |
+        Please paste logs or error messages here.
+        You can also attach screenshots by drag & drop.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Information
+      description: Any additional information that might help resolve the issue
+      placeholder: |
+        - Related PR link
+        - Metadata file content
+        - Transaction hash
+        - Other references
+      value: |
+        **Related Links:**
+
+        **Additional Details:**
+
+        **Attachments:**
