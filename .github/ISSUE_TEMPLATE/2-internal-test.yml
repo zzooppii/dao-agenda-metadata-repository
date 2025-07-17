@@ -2,7 +2,7 @@ name: 🧪 Internal Test
 description: This is a internal test.
 title: "[Internal Test] "
 labels: [internal-test]
-aassignees:
+assignees:
   - Zena-park
 body:
   - type: markdown
