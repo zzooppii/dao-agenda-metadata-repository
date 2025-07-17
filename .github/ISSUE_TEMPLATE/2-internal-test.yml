@@ -1,5 +1,5 @@
 name: 🧪 Internal Test
-description: This is a internal test.
+description: Report issues found during internal testing
 title: "[Internal Test] "
 labels: [internal-test, "needs-review"]
 assignees:
