@@ -1,0 +1,38 @@
+{
+  "id": 153,
+  "title": "removeBlackList",
+  "description": "https://github.com/tokamak-network/ton-staking-v2/issues/310",
+  "network": "sepolia",
+  "transaction": "0xc579ca36781796d37b27e0dbf88704d734dd3dce8d7143751fa281dbb0b28d75",
+  "creator": {
+    "address": "0x757DE9c340c556b56f62eFaE859Da5e08BAAE7A2",
+    "signature": "0x49d4728b45aac65c8c2eafea9d6567cafa5b08b10938487d744fe1e89dfa9b2a56e777c340115a278896ab0c95acb2b8da0f23d8cc26d106880ef9083ccd61361b"
+  },
+  "actions": [
+    {
+      "title": "removeFromBlacklist(address)",
+      "contractAddress": "0xA2101482b28E3D99ff6ced517bA41EFf4971a386",
+      "method": "removeFromBlacklist(address)",
+      "calldata": "0x537df3b6000000000000000000000000bdbb2c17846027c75802464d4afdd23a9192e103",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_candidate",
+              "type": "address"
+            }
+          ],
+          "name": "removeFromBlacklist",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false
+    }
+  ],
+  "createdAt": "2025-07-28T07:17:53.00Z",
+  "snapshotUrl": "https://testnet.snapshot.box/#/s-tn:tokamak.eth/",
+  "discourseUrl": ""
+}
