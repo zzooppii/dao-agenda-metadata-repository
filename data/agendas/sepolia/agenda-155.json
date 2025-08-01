@@ -1,0 +1,38 @@
+{
+  "id": 155,
+  "title": "DAO Test",
+  "description": "https://github.com",
+  "network": "sepolia",
+  "transaction": "0x9d0988d0ea49331ab7cb37b79587986a00a6b069f60d82c86251bd5bb52b8799",
+  "creator": {
+    "address": "0xD7D57ba9F40629d48c4009a87654CDDa8A5433E9",
+    "signature": "0xadef7b26fb32da050a303b8b404a823fbebd6c22d13e5fcd791b0bcba870259052dea1b05647146f7b009364ee4e9a485080d6320b895348fa10731147528cba1c"
+  },
+  "actions": [
+    {
+      "title": "updateSeigniorage()",
+      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "method": "updateSeigniorage()",
+      "calldata": "0x764a7856",
+      "abi": [
+        {
+          "inputs": [],
+          "name": "updateSeigniorage",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false
+    }
+  ],
+  "createdAt": "2025-07-29T02:29:25.00Z",
+  "snapshotUrl": "https://snapshot.org",
+  "discourseUrl": ""
+}
