@@ -1,0 +1,51 @@
+{
+  "id": 170,
+  "title": "agenda-170",
+  "description": "https://github",
+  "network": "sepolia",
+  "transaction": "0x0c85ce8e284b3f72b7f6a3cf0bf43e01bce3f931ac037877fa2a8252a440f42f",
+  "creator": {
+    "address": "0xF9Fa94D45C49e879E46Ea783fc133F41709f3bc7",
+    "signature": "0x95737bdeee78f8eda6cb30a8124903c8a200895181264b75b4eed5dfee417674543938d85bd1f95a44bfbe93cb27fc7b6d79f02c33efec46ae721dbfcf68c7d81c"
+  },
+  "actions": [
+    {
+      "title": "increaseAllowance(address,uint256)",
+      "contractAddress": "0xa30fe40285B8f5c0457DbC3B7C8A280373c40044",
+      "method": "increaseAllowance(address,uint256)",
+      "calldata": "0x39509351000000000000000000000000f9fa94d45c49e879e46ea783fc133f41709f3bc7000000000000000000000000000000000000000000000000016345785d8a0000",
+      "abi": [
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "addedValue",
+              "type": "uint256"
+            }
+          ],
+          "name": "increaseAllowance",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ],
+      "sendEth": false
+    }
+  ],
+  "createdAt": "2025-07-29T09:27:15.00Z",
+  "snapshotUrl": "https://snapshot.org/#/",
+  "discourseUrl": ""
+}
