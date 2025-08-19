@@ -6,32 +6,36 @@
     "transaction": "0x31d1370bad392ad46f79452be3d40126fd8f00a6f65175faf94ffd0073097cf8",
     "creator": {
         "address": "0x44bfc8355fea67b2d4d599294e2a15b27fb7923d",
-        "signature": "0xabee61529716f6812e6128cd2dc23da7abaafa461ef1a2adbec5911c7ee72525690b2b9b80efa31ad1c5b4cec34b74bcad0c70a7e3723c4489523cb4935f18361b"
+        "signature": "0x0de5b41f8caf79148719dc27cfd6beea434ccd96230a73de1361282cf9634f5d2652f4747b3833301ec78cb12e58bbfa85eeefdd143e87ea2cc6aba11d4f68701b"
     },
-    "createdAt": "2024-07-31T17:25:00.00Z",
-    "updatedAt": "2025-08-19T12:27:24.00Z",
+    "createdAt": "2025-08-19T13:01:15.00Z",
     "snapshotUrl": "",
     "discourseUrl": "",
     "actions": [
     {
-      "title": "updateSeigniorage()",
+      "title": "setWithdrawalDelay(address,uint256)",
       "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
-      "method": "updateSeigniorage()",
-      "calldata": "0x764a7856",
+      "method": "setWithdrawalDelay(address,uint256)",
+      "calldata": "0xdc5a709f",
       "abi": [
         {
-          "inputs": [],
-          "name": "updateSeigniorage",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "layer2",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "withdrawalDelay_",
+                "type": "uint256"
+              }
+            ],
+            "name": "setWithdrawalDelay",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          }
       ]
     }
   ]
