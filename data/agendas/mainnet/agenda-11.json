@@ -1,6 +1,6 @@
 {
     "id": 11,
-    "title": "Add logic to use the Deposit Manager contract",
+    "title": "DepositManagerAddition",
     "description": "Fix overflow vulnerability and limit Operator's ability to set custom withdrawal delay period to at most 30 days.",
     "network": "mainnet",
     "transaction": "0x31d1370bad392ad46f79452be3d40126fd8f00a6f65175faf94ffd0073097cf8",
