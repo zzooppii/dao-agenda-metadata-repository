@@ -6,9 +6,9 @@
     "transaction": "0x31d1370bad392ad46f79452be3d40126fd8f00a6f65175faf94ffd0073097cf8",
     "creator": {
         "address": "0x44bfc8355fea67b2d4d599294e2a15b27fb7923d",
-        "signature": "0x0de5b41f8caf79148719dc27cfd6beea434ccd96230a73de1361282cf9634f5d2652f4747b3833301ec78cb12e58bbfa85eeefdd143e87ea2cc6aba11d4f68701b"
+        "signature": "0x833c7dd2185b5309857492168fb400e6cec2f279b43bd377d04e1db948d721ee0d57f9da571c07bc9f3b07a0d4c515f10402c932e63786be10f9ce7300d79c361b"
     },
-    "createdAt": "2025-08-19T13:01:15.00Z",
+    "createdAt": "2025-08-19T14:05:41.00Z",
     "snapshotUrl": "",
     "discourseUrl": "",
     "actions": [
