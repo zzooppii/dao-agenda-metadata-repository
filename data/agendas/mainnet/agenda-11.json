@@ -14,7 +14,7 @@
     "actions": [
     {
       "title": "setWithdrawalDelay(address,uint256)",
-      "contractAddress": "0x2320542ae933FbAdf8f5B97cA348c7CeDA90fAd7",
+      "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
       "method": "setWithdrawalDelay(address,uint256)",
       "calldata": "0xdc5a709f",
       "abi": [
