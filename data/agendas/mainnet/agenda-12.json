@@ -1,0 +1,79 @@
+{
+    "id": 12,
+    "title": "seigniorageRatesChange",
+    "description": "All the seigniorage rates will be changed.",
+    "network": "mainnet",
+    "transaction": "0x8ea3510967ab12c13a1eb21c82dba8c22d562f388a5d19967ac1974c7c8fb6f6",
+    "creator": {
+      "address": "0x3bfda92fa3bc0ab080cac3775147b6318b1c5115",
+      "signature": "0x262055f836e1bd2d1ccbd74c8d36d7ed44e5ac8ab044688ec00bb53a80cde0a5301ac85bae1f486f5a40ab511e6af1d38983325c02803d060c6141ae1346a6331b"
+    },
+    "createdAt": "2025-08-20T05:34:38.00Z",
+    "snapshotUrl": "",
+    "discourseUrl": "https://dao.tokamak.network/#/agenda/12",
+    "actions": [
+      {
+        "title": "SetPowerTONSeigRate(uint256)",
+        "contractAddress": "0x0b55a0f463b6DEFb81c6063973763951712D0E5F",
+        "method": "SetPowerTONSeigRate(uint256)",
+        "calldata": "0x9c877e470000000000000000000000000000000000000000000000000000000000000000",
+        "abi": [
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "powerTONSeigRate_",
+                "type": "uint256"
+              }
+            ],
+            "name": "setPowerTONSeigRate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          }
+        ]
+      },
+      {
+        "title": "setDaoSeigRate(uint256)",
+        "contractAddress": "0x0b55a0f463b6DEFb81c6063973763951712D0E5F",
+        "method": "setDaoSeigRate(uint256)",
+        "calldata": "0x03e1cc270000000000000000000000000000000000000000019d971e4fe8401e74000000",
+        "abi": [
+            {
+                "inputs": [
+                  {
+                    "internalType": "uint256",
+                    "name": "daoSeigRate_",
+                    "type": "uint256"
+                  }
+                ],
+                "name": "setDaoSeigRate",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
+      },
+      {
+        "title": "setPseigRate(uint256)",
+        "contractAddress": "0x0b55a0f463b6DEFb81c6063973763951712D0E5F",
+        "method": "setPseigRate(uint256)",
+        "calldata": "0xe40348320000000000000000000000000000000000000000019d971e4fe8401e74000000",
+        "abi": [
+            {
+                "inputs": [
+                  {
+                    "internalType": "uint256",
+                    "name": "pseigRate_",
+                    "type": "uint256"
+                  }
+                ],
+                "name": "setPseigRate",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
+      }
+    ]
+  }
