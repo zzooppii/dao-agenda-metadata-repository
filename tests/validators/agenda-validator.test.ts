@@ -2,9 +2,19 @@ import { AgendaValidator } from "../../src/validators/agenda-validator";
 import { getRpcUrl, Network } from "../../src/config/rpc";
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
-import { describe, it, expect } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
 import { TIME_CONSTANTS, TEST_CONSTANTS } from "../../src/config/constants";
 dotenv.config();
+
+// Mock console.error to suppress expected error messages during tests
+const originalConsoleError = console.error;
+beforeEach(() => {
+  console.error = jest.fn();
+});
+
+afterEach(() => {
+  console.error = originalConsoleError;
+});
 
 const abiAgendaCreate = [
   {
