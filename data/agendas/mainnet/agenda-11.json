@@ -40,6 +40,33 @@
                 }
             ],
             "sendEth": false
+        },
+        {
+            "title": "setSelectorImplementations2(bytes4[],address)",
+            "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+            "method": "setSelectorImplementations2(bytes4[],address)",
+            "calldata": "0xab9231f3081b5c3c27d34ed4cefc1280f89ff6870000000000000000000000000000000000000000000000000000000000000001dc5a709f",
+            "abi": [
+                {
+                    "inputs": [
+                      {
+                        "internalType": "bytes4[]",
+                        "name": "_selectors",
+                        "type": "bytes4[]"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "_imp",
+                        "type": "address"
+                      }
+                    ],
+                    "name": "setSelectorImplementations2",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ],
+            "sendEth": false
         }
   ],
   "createdAt": "2025-08-20T01:41:13.00Z",
