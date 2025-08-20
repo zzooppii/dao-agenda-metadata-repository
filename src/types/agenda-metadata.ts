@@ -7,8 +7,8 @@ const ethereumAddressSchema = z.string().regex(ethereumAddressRegex, "Invalid Et
 // 16진수 문자열 검증 (0x로 시작하는 16진수)
 const hexStringSchema = z.string().regex(/^0x[a-fA-F0-9]+$/, "Invalid hex string format");
 
-// 함수 시그니처 검증 (예: "transfer(address,uint256)")
-const functionSignatureRegex = /^[a-zA-Z0-9_]+\([a-zA-Z0-9_,\s]*\)$/;
+// 함수 시그니처 검증 (예: "transfer(address,uint256)", "getData(bytes4[])")
+const functionSignatureRegex = /^[a-zA-Z0-9_]+\([a-zA-Z0-9_,\s\[\]]*\)$/;
 const functionSignatureSchema = z.string().regex(functionSignatureRegex, "Invalid function signature format");
 
 const AbiItemSchema = z.object({
