@@ -1,0 +1,75 @@
+{
+    "id": 11,
+    "title": "DepositManagerAddition",
+    "description": "Fix overflow vulnerability and limit Operator's ability to set custom withdrawal delay period to at most 30 days.",
+    "network": "mainnet",
+    "transaction": "0x31d1370bad392ad46f79452be3d40126fd8f00a6f65175faf94ffd0073097cf8",
+    "creator": {
+        "address": "0x44bfc8355fea67b2d4d599294e2a15b27fb7923d",
+        "signature": "0xe0432f2b0092d5f3b57be6fec3ddd4e8ab20fa08cce0766fd78719bf397d441432f9e3aa2caa09beaa1e343104520005e1c838ce98a7c226ce1acc529bffdda81c"
+    },
+    "actions": [
+        {
+            "title": "setImplementation2(address,uint256,bool)",
+            "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+            "method": "setImplementation2(address,uint256,bool)",
+            "calldata": "0x7cd5f663000000000000000000000000ab9231f3081b5c3c27d34ed4cefc1280f89ff68700000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
+            "abi": [
+                {
+                    "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newImplementation",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_index",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "_alive",
+                        "type": "bool"
+                    }
+                    ],
+                    "name": "setImplementation2",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ],
+            "sendEth": false
+        },
+        {
+            "title": "setSelectorImplementations2(bytes4[],address)",
+            "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+            "method": "setSelectorImplementations2(bytes4[],address)",
+            "calldata": "0x4a5df50f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000ab9231f3081b5c3c27d34ed4cefc1280f89ff6870000000000000000000000000000000000000000000000000000000000000001dc5a709f00000000000000000000000000000000000000000000000000000000",
+            "abi": [
+                {
+                    "inputs": [
+                      {
+                        "internalType": "bytes4[]",
+                        "name": "_selectors",
+                        "type": "bytes4[]"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "_imp",
+                        "type": "address"
+                      }
+                    ],
+                    "name": "setSelectorImplementations2",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ],
+            "sendEth": false
+        }
+  ],
+  "createdAt": "2025-08-20T04:52:34.00Z",
+  "snapshotUrl": "",
+  "discourseUrl": "https://github.com/tokamak-network/ton-staking-v2/issues/33"
+}
