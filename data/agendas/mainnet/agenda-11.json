@@ -12,31 +12,62 @@
     "snapshotUrl": "",
     "discourseUrl": "",
     "actions": [
-    {
-      "title": "setWithdrawalDelay(address,uint256)",
-      "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
-      "method": "setWithdrawalDelay(address,uint256)",
-      "calldata": "0xdc5a709f",
-      "abi": [
         {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "layer2",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "withdrawalDelay_",
-                "type": "uint256"
-              }
-            ],
-            "name": "setWithdrawalDelay",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          }
-      ]
-    }
+            "title": "setImplementation2(address,uint256,bool)",
+            "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+            "method": "setImplementation2(address,uint256,bool)",
+            "calldata": "0x647cd5f663000000000000000000000000ab9231f3081b5c3c27d34ed4cefc1280f89ff6870000000000000000000000000000000000000000000000000000000000000001",
+            "abi": [
+                {
+                    "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newImplementation",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_index",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "_alive",
+                        "type": "bool"
+                    }
+                    ],
+                    "name": "setImplementation2",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "title": "setSelectorImplementations2(bytes4[],address)",
+            "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+            "method": "setSelectorImplementations2(bytes4[],address)",
+            "calldata": "0xab9231f3081b5c3c27d34ed4cefc1280f89ff6870000000000000000000000000000000000000000000000000000000000000001dc5a709f",
+            "abi": [
+                {
+                    "inputs": [
+                      {
+                        "internalType": "bytes4[]",
+                        "name": "_selectors",
+                        "type": "bytes4[]"
+                      },
+                      {
+                        "internalType": "address",
+                        "name": "_imp",
+                        "type": "address"
+                      }
+                    ],
+                    "name": "setSelectorImplementations2",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ]
+        }
   ]
 }
