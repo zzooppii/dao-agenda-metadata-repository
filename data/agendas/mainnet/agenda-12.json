@@ -8,6 +8,9 @@
       "address": "0x3bfda92fa3bc0ab080cac3775147b6318b1c5115",
       "signature": "0x262055f836e1bd2d1ccbd74c8d36d7ed44e5ac8ab044688ec00bb53a80cde0a5301ac85bae1f486f5a40ab511e6af1d38983325c02803d060c6141ae1346a6331b"
     },
+    "createdAt": "2025-08-20T05:34:38.00Z",
+    "snapshotUrl": "",
+    "discourseUrl": "https://dao.tokamak.network/#/agenda/12",
     "actions": [
       {
         "title": "SetPowerTONSeigRate(uint256)",
@@ -72,8 +75,5 @@
             }
         ]
       }
-    ],
-    "createdAt": "2025-08-20T05:34:38.00Z",
-    "snapshotUrl": "",
-    "discourseUrl": "https://dao.tokamak.network/#/agenda/12",
+    ]
   }
