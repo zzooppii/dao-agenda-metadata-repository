@@ -13,7 +13,7 @@
             "title": "setImplementation2(address,uint256,bool)",
             "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
             "method": "setImplementation2(address,uint256,bool)",
-            "calldata": "0x647cd5f663000000000000000000000000ab9231f3081b5c3c27d34ed4cefc1280f89ff6870000000000000000000000000000000000000000000000000000000000000001",
+            "calldata": "0x7cd5f663000000000000000000000000ab9231f3081b5c3c27d34ed4cefc1280f89ff68700000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
             "abi": [
                 {
                     "inputs": [
@@ -45,7 +45,7 @@
             "title": "setSelectorImplementations2(bytes4[],address)",
             "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
             "method": "setSelectorImplementations2(bytes4[],address)",
-            "calldata": "0xab9231f3081b5c3c27d34ed4cefc1280f89ff6870000000000000000000000000000000000000000000000000000000000000001dc5a709f",
+            "calldata": "0x4a5df50f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000ab9231f3081b5c3c27d34ed4cefc1280f89ff6870000000000000000000000000000000000000000000000000000000000000001dc5a709f00000000000000000000000000000000000000000000000000000000",
             "abi": [
                 {
                     "inputs": [
@@ -71,5 +71,5 @@
   ],
   "createdAt": "2025-08-20T01:41:13.00Z",
   "snapshotUrl": "",
-  "discourseUrl": ""
+  "discourseUrl": "https://github.com/tokamak-network/ton-staking-v2/issues/33"
 }
