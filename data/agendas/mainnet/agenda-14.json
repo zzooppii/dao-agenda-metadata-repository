@@ -1,0 +1,381 @@
+{
+  "id": 14,
+  "title": "TONStakingV2AndDAOupgrade",
+  "description": "The Tokamak Network Foundation proposes a staking V2 upgrade to strengthen the TON economy.",
+  "network": "mainnet",
+  "transaction": "0x6586038041b73be4311dec3d8e1fbd011b8dfef1bc98014e3db51a5a81ced779",
+  "creator": {
+    "address": "0x6e1c4a442e9b9dda59382ee78058650f1723e0f6",
+    "signature": "0xe8245e2175e06f7390a64b66ad8b9237dad0b8b6066989e5c4381e08e6e2ecb2396e1596aef0e273d4e487acd987d2c635144a6686a915b0dad3270f207759c51b"
+  },
+  "createdAt": "2025-08-21T06:33:28.00Z",
+  "snapshotUrl": "",
+  "discourseUrl": "https://github.com/tokamak-network/ton-staking-v2/issues/59",
+  "actions": [
+    {
+      "title": "upgradeTo(address)",
+      "contractAddress": "0xdd9f0ccc044b0781289ee318e5971b0139602c26",
+      "method": "upgradeTo(address)",
+      "calldata": "0x3659cfe60000000000000000000000009e7f54eff4a4d35097e0acb6994a723f1a28368c",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "impl",
+              "type": "address"
+            }
+          ],
+          "name": "upgradeTo",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "upgradeTo2(address)",
+      "contractAddress": "0xdd9f0ccc044b0781289ee318e5971b0139602c26",
+      "method": "upgradeTo2(address)",
+      "calldata": "0xdfc2ccf30000000000000000000000009050af1638f379a018737880ad946cdda9101a25",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "impl",
+              "type": "address"
+            }
+          ],
+          "name": "upgradeTo2",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setImplementation2(address,uint256,bool)",
+      "contractAddress": "0xdd9f0ccc044b0781289ee318e5971b0139602c26",
+      "method": "setImplementation2(address,uint256,bool)",
+      "calldata": "0x7cd5f663000000000000000000000000cb9859dc0fbeca68efff2bce289150513fdf7d9200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_index",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "_alive",
+              "type": "bool"
+            }
+          ],
+          "name": "setImplementation2",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setSelectorImplementations2(bytes4[],address)",
+      "contractAddress": "0xdd9f0ccc044b0781289ee318e5971b0139602c26",
+      "method": "setSelectorImplementations2(bytes4[],address)",
+      "calldata": "0x4a5df50f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000cb9859dc0fbeca68efff2bce289150513fdf7d9200000000000000000000000000000000000000000000000000000000000000126ff7320100000000000000000000000000000000000000000000000000000000401e23e600000000000000000000000000000000000000000000000000000000baa12536000000000000000000000000000000000000000000000000000000007657f20a000000000000000000000000000000000000000000000000000000004b799db1000000000000000000000000000000000000000000000000000000002af60ff40000000000000000000000000000000000000000000000000000000049c39f1400000000000000000000000000000000000000000000000000000000047f52f2000000000000000000000000000000000000000000000000000000004d288fec00000000000000000000000000000000000000000000000000000000aef2c585000000000000000000000000000000000000000000000000000000006da8f3ce00000000000000000000000000000000000000000000000000000000c1ba4e590000000000000000000000000000000000000000000000000000000050e8f17d000000000000000000000000000000000000000000000000000000005ebe76220000000000000000000000000000000000000000000000000000000069154295000000000000000000000000000000000000000000000000000000005c43030f0000000000000000000000000000000000000000000000000000000074d58f4800000000000000000000000000000000000000000000000000000000884033e700000000000000000000000000000000000000000000000000000000",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4[]",
+              "name": "_selectors",
+              "type": "bytes4[]"
+            },
+            {
+              "internalType": "address",
+              "name": "_imp",
+              "type": "address"
+            }
+          ],
+          "name": "setSelectorImplementations2",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "upgradeTo(address)",
+      "contractAddress": "0x0b55a0f463b6defb81c6063973763951712d0e5f",
+      "method": "upgradeTo(address)",
+      "calldata": "0x3659cfe6000000000000000000000000b1958719b3af9b4d85d93efc5e317c97cce9abc4",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "impl",
+              "type": "address"
+            }
+          ],
+          "name": "upgradeTo",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setImplementation2(address,uint256,bool)",
+      "contractAddress": "0x0b55a0f463b6defb81c6063973763951712d0e5f",
+      "method": "setImplementation2(address,uint256,bool)",
+      "calldata": "0x7cd5f663000000000000000000000000ce18c6f84f10881ea47a43af7311a29bb116f62800000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_index",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "_alive",
+              "type": "bool"
+            }
+          ],
+          "name": "setImplementation2",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setSelectorImplementations2(bytes4[],address)",
+      "contractAddress": "0x0b55a0f463b6defb81c6063973763951712d0e5f",
+      "method": "setSelectorImplementations2(bytes4[],address)",
+      "calldata": "0x4a5df50f0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000ce18c6f84f10881ea47a43af7311a29bb116f6280000000000000000000000000000000000000000000000000000000000000008764a7856000000000000000000000000000000000000000000000000000000001e1f0b60000000000000000000000000000000000000000000000000000000005015cb2b000000000000000000000000000000000000000000000000000000002c1e01560000000000000000000000000000000000000000000000000000000054798b5500000000000000000000000000000000000000000000000000000000d732785e000000000000000000000000000000000000000000000000000000008456cb59000000000000000000000000000000000000000000000000000000003f4ba83a00000000000000000000000000000000000000000000000000000000",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4[]",
+              "name": "_selectors",
+              "type": "bytes4[]"
+            },
+            {
+              "internalType": "address",
+              "name": "_imp",
+              "type": "address"
+            }
+          ],
+          "name": "setSelectorImplementations2",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setImplementation2(address,uint256,bool)",
+      "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+      "method": "setImplementation2(address,uint256,bool)",
+      "calldata": "0x7cd5f66300000000000000000000000074bc3031b9369e6b898e82784106257d4d37eac500000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newImplementation",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_index",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "_alive",
+              "type": "bool"
+            }
+          ],
+          "name": "setImplementation2",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setSelectorImplementations2(bytes4[],address)",
+      "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+      "method": "setSelectorImplementations2(bytes4[],address)",
+      "calldata": "0x4a5df50f000000000000000000000000000000000000000000000000000000000000004000000000000000000000000074bc3031b9369e6b898e82784106257d4d37eac50000000000000000000000000000000000000000000000000000000000000008cc48b94700000000000000000000000000000000000000000000000000000000dd283f97000000000000000000000000000000000000000000000000000000001c9283a3000000000000000000000000000000000000000000000000000000009f382d1100000000000000000000000000000000000000000000000000000000cf8f91100000000000000000000000000000000000000000000000000000000016b5d5bd0000000000000000000000000000000000000000000000000000000090107afe00000000000000000000000000000000000000000000000000000000da95ebf700000000000000000000000000000000000000000000000000000000",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4[]",
+              "name": "_selectors",
+              "type": "bytes4[]"
+            },
+            {
+              "internalType": "address",
+              "name": "_imp",
+              "type": "address"
+            }
+          ],
+          "name": "setSelectorImplementations2",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setCandidateAddOnFactory(address)",
+      "contractAddress": "0xdd9f0ccc044b0781289ee318e5971b0139602c26",
+      "method": "setCandidateAddOnFactory(address)",
+      "calldata": "0x401e23e6000000000000000000000000fa8ce5caf456115e72b96e5074769b8f66aa5861",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_candidateAddOnFactory",
+              "type": "address"
+            }
+          ],
+          "name": "setCandidateAddOnFactory",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setLayer2Manager(address)",
+      "contractAddress": "0xdd9f0ccc044b0781289ee318e5971b0139602c26",
+      "method": "setLayer2Manager(address)",
+      "calldata": "0xbaa12536000000000000000000000000d6bf6b2b7553c8064ba763ad6989829060fdfc1d",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_layer2Manager",
+              "type": "address"
+            }
+          ],
+          "name": "setLayer2Manager",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setLayer2Manager(address)",
+      "contractAddress": "0x0b55a0f463b6defb81c6063973763951712d0e5f",
+      "method": "setLayer2Manager(address)",
+      "calldata": "0xbaa12536000000000000000000000000d6bf6b2b7553c8064ba763ad6989829060fdfc1d",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_layer2Manager",
+              "type": "address"
+            }
+          ],
+          "name": "setLayer2Manager",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setL1BridgeRegistry(address)",
+      "contractAddress": "0x0b55a0f463b6defb81c6063973763951712d0e5f",
+      "method": "setL1BridgeRegistry(address)",
+      "calldata": "0x0c1da8df00000000000000000000000039d43281a4a5e922ab0dcf89825d73273d8c5ba4",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "l1BridgeRegistry_",
+              "type": "address"
+            }
+          ],
+          "name": "setL1BridgeRegistry",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setAddresses(address,address)",
+      "contractAddress": "0x0b58ca72b12f01fc05f8f252e226f3e2089bd00e",
+      "method": "setAddresses(address,address)",
+      "calldata": "0x90107afe00000000000000000000000039d43281a4a5e922ab0dcf89825d73273d8c5ba4000000000000000000000000d6bf6b2b7553c8064ba763ad6989829060fdfc1d",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_l1BridgeRegistry",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_layer2Manager",
+              "type": "address"
+            }
+          ],
+          "name": "setAddresses",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "title": "setCooldownTime(uint256)",
+      "contractAddress": "0xdd9f0ccc044b0781289ee318e5971b0139602c26",
+      "method": "setCooldownTime(uint256)",
+      "calldata": "0x6ff73201000000000000000000000000000000000000000000000000000000000003f480",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_cooltime",
+              "type": "uint256"
+            }
+          ],
+          "name": "setCooldownTime",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    }
+  ]
+}
