@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { AgendaValidator } from "./agenda-validator.js";
 import { AgendaMetadata, AgendaMetadataSchema } from "../types/agenda-metadata.js";
 import { getRpcUrl } from "../config/rpc.js";
+import { detectVersionByOffset, validateUint128, formatBigInt } from "../utils/validation-helpers.js";
 import { readFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -255,28 +256,50 @@ function validateCalldata(tx: any, metadata: AgendaMetadata): boolean {
 
     const callData = decodedData[2]; // data parameter
 
-    // Try to decode as agenda parameters (both legacy and new versions)
+    // Analyze calldata structure to determine version
+    const detectedVersion = detectVersionByOffset(callData);
+    console.log("🔍 Detected version:", detectedVersion);
+
+    if (detectedVersion === 'unknown') {
+      console.error("❌ Unable to determine calldata version - invalid structure");
+      return false;
+    }
+
+    // Decode based on detected version
     let agendaParams;
+    const isNewVersion = detectedVersion === 'new';
+
     try {
-      // Try new version first (with memo)
-      agendaParams = ethers.AbiCoder.defaultAbiCoder().decode(
-        ["address[]", "uint128", "uint128", "bool", "bytes[]", "string"],
-        callData
-      );
-    } catch (error) {
-      try {
-        // Try legacy version (without memo)
+      if (isNewVersion) {
+        agendaParams = ethers.AbiCoder.defaultAbiCoder().decode(
+          ["address[]", "uint128", "uint128", "bool", "bytes[]", "string"],
+          callData
+        );
+      } else {
         agendaParams = ethers.AbiCoder.defaultAbiCoder().decode(
           ["address[]", "uint128", "uint128", "bool", "bytes[]"],
           callData
         );
-      } catch (legacyError) {
-        console.error("❌ Failed to decode agenda parameters:", error);
-        return false;
       }
+    } catch (error) {
+      console.error(`❌ ${isNewVersion ? 'New' : 'Legacy'} version decode failed:`, error instanceof Error ? error.message : error);
+      return false;
     }
 
-    const [addresses, , , , calldatas, memo] = agendaParams;
+    // Extract parameters based on version
+    const [addresses, value, deadline, emergency, calldatas, memo] = isNewVersion
+      ? agendaParams
+      : [...agendaParams, undefined]; // Add undefined memo for legacy version
+
+    // Validate uint128 ranges
+    if (!validateUint128(value)) {
+      console.error("❌ Value is out of uint128 range:", formatBigInt(value));
+      return false;
+    }
+    if (!validateUint128(deadline)) {
+      console.error("❌ Deadline is out of uint128 range:", formatBigInt(deadline));
+      return false;
+    }
 
     // Validate addresses array
     const metadataAddresses = metadata.actions.map(action => action.contractAddress.toLowerCase());
@@ -303,6 +326,7 @@ function validateCalldata(tx: any, metadata: AgendaMetadata): boolean {
     // Validate memo (new version only)
     if (memo !== undefined) {
       const metadataMemo = metadata.snapshotUrl || metadata.discourseUrl || "";
+
       if (memo !== metadataMemo) {
         console.error("❌ Memo does not match snapshotUrl/discourseUrl");
         console.error("   Transaction memo:", memo);
@@ -314,6 +338,7 @@ function validateCalldata(tx: any, metadata: AgendaMetadata): boolean {
     return true;
   } catch (error) {
     console.error("❌ Calldata validation error:", error);
+    console.error("   Error stack:", error instanceof Error ? error.stack : "No stack trace");
     return false;
   }
 }
