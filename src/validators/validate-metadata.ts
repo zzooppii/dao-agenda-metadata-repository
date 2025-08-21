@@ -257,21 +257,26 @@ function validateCalldata(tx: any, metadata: AgendaMetadata): boolean {
 
     // Try to decode as agenda parameters (both legacy and new versions)
     let agendaParams;
+    let hasmemo = false;
+    
     try {
-      // Try new version first (with memo)
+      // Try legacy version first (without memo)
       agendaParams = ethers.AbiCoder.defaultAbiCoder().decode(
-        ["address[]", "uint128", "uint128", "bool", "bytes[]", "string"],
+        ["address[]", "uint128", "uint128", "bool", "bytes[]"],
         callData
       );
-    } catch (error) {
+    } catch (legacyError) {
       try {
-        // Try legacy version (without memo)
+        // Try new version (with memo)
         agendaParams = ethers.AbiCoder.defaultAbiCoder().decode(
-          ["address[]", "uint128", "uint128", "bool", "bytes[]"],
+          ["address[]", "uint128", "uint128", "bool", "bytes[]", "string"],
           callData
         );
-      } catch (legacyError) {
+        hasmemo = true;
+      } catch (error) {
         console.error("❌ Failed to decode agenda parameters:", error);
+        console.error("   Legacy error:", legacyError);
+        console.error("   New version error:", error);
         return false;
       }
     }
@@ -301,7 +306,7 @@ function validateCalldata(tx: any, metadata: AgendaMetadata): boolean {
     }
 
     // Validate memo (new version only)
-    if (memo !== undefined) {
+    if (hasmemo && memo !== undefined) {
       const metadataMemo = metadata.snapshotUrl || metadata.discourseUrl || "";
       if (memo !== metadataMemo) {
         console.error("❌ Memo does not match snapshotUrl/discourseUrl");
