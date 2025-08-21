@@ -6,9 +6,9 @@
     "transaction": "0x8ea3510967ab12c13a1eb21c82dba8c22d562f388a5d19967ac1974c7c8fb6f6",
     "creator": {
       "address": "0x3bfda92fa3bc0ab080cac3775147b6318b1c5115",
-      "signature": "0x262055f836e1bd2d1ccbd74c8d36d7ed44e5ac8ab044688ec00bb53a80cde0a5301ac85bae1f486f5a40ab511e6af1d38983325c02803d060c6141ae1346a6331b"
+      "signature": "0x647708d03c6598fb084762063236bd7992ff7400ce2237c8901e951df49e34636b068304d96af7fb5b65daa45b5ef5058b471012e18ecf81a8748110792ad59b1b"
     },
-    "createdAt": "2025-08-20T05:34:38.00Z",
+    "createdAt": "2025-08-21T08:00:55.00Z",
     "snapshotUrl": "",
     "discourseUrl": "https://github.com/tokamak-network/ton-staking-v2/issues/312",
     "actions": [
