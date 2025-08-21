@@ -1,0 +1,37 @@
+{
+    "id": 13,
+    "title": "DAOcontractUpgrade",
+    "description": "Tokamak Network foundation proposes a staking v2.5 upgrade to enhance TON economics.",
+    "network": "mainnet",
+    "transaction": "0x61a58533689b3753e2203dcd9abd8a7b42462e63c1cf04833bb4a6910d2dcccf",
+    "creator": {
+      "address": "0xf0b595d10a92a5a9bc3ffea7e79f5d266b6035ea",
+      "signature": "0xf87100dd35434331937a3fff7e35bf74cfbba7e86d040da68bef5ae173fdcb701e375a76855c3f32c8d0811969c3d3726505e0a0f3de3338a868ce159f8b841f1c"
+    },
+    "createdAt": "2025-08-21T02:56:37.00Z",
+    "snapshotUrl": "",
+    "discourseUrl": "https://github.com/tokamak-network/ton-staking-v2/issues/59",
+    "actions": [
+      {
+        "title": "SetPowerTONSeigRate(uint256)",
+        "contractAddress": "0x0b55a0f463b6DEFb81c6063973763951712D0E5F",
+        "method": "SetPowerTONSeigRate(uint256)",
+        "calldata": "0x9c877e470000000000000000000000000000000000000000000000000000000000000000",
+        "abi": [
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "powerTONSeigRate_",
+                "type": "uint256"
+              }
+            ],
+            "name": "setPowerTONSeigRate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          }
+        ]
+      }
+    ]
+  }
